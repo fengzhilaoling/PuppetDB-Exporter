@@ -27,6 +27,11 @@ type PuppetDBMetrics struct {
 	httpRequestDuration   *prometheus.HistogramVec
 	httpActiveConnections prometheus.Gauge
 
+	// HTTP 端点详细指标
+	httpRequestRate            *prometheus.GaugeVec
+	httpServiceTimePercentiles *prometheus.GaugeVec
+	httpServiceTimeStats       *prometheus.GaugeVec
+
 	// 数据库连接池指标
 	dbConnectionsActive  *prometheus.GaugeVec
 	dbConnectionsIdle    *prometheus.GaugeVec
@@ -212,6 +217,34 @@ func NewPuppetDBMetrics(namespace string) *PuppetDBMetrics {
 			Name:      "http_active_connections",
 			Help:      "Number of active HTTP connections",
 		},
+	)
+
+	// HTTP 端点详细指标
+	pm.httpRequestRate = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "http_request_rate",
+			Help:      "HTTP request rate in requests per second",
+		},
+		[]string{"endpoint", "rate_type"},
+	)
+
+	pm.httpServiceTimePercentiles = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "http_service_time_percentile_seconds",
+			Help:      "HTTP service time percentiles in seconds",
+		},
+		[]string{"endpoint", "percentile"},
+	)
+
+	pm.httpServiceTimeStats = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "http_service_time_stats_seconds",
+			Help:      "HTTP service time statistics in seconds",
+		},
+		[]string{"endpoint", "stat"},
 	)
 
 	// 数据库连接池指标
@@ -687,6 +720,9 @@ func (pm *PuppetDBMetrics) Register() {
 	prometheus.MustRegister(pm.httpRequestsTotal)
 	prometheus.MustRegister(pm.httpRequestDuration)
 	prometheus.MustRegister(pm.httpActiveConnections)
+	prometheus.MustRegister(pm.httpRequestRate)
+	prometheus.MustRegister(pm.httpServiceTimePercentiles)
+	prometheus.MustRegister(pm.httpServiceTimeStats)
 
 	// 数据库连接池指标
 	prometheus.MustRegister(pm.dbConnectionsActive)
@@ -1010,5 +1046,56 @@ func (pm *PuppetDBMetrics) UpdateJVMThreadingMetrics(totalStartedThreads float64
 	}
 	if threadCpuTimeEnabled >= 0 {
 		pm.jvmThreadingThreadCpuTimeEnabled.Set(threadCpuTimeEnabled)
+	}
+}
+
+// UpdateHTTPDetailedMetrics 更新HTTP端点详细指标
+func (pm *PuppetDBMetrics) UpdateHTTPDetailedMetrics(endpoint string, metrics map[string]float64) {
+	// 更新请求速率指标
+	if oneMinuteRate, ok := metrics["requests_200_one_minute_rate"]; ok && oneMinuteRate >= 0 {
+		pm.httpRequestRate.WithLabelValues(endpoint, "one_minute").Set(oneMinuteRate)
+	}
+	if fiveMinuteRate, ok := metrics["requests_200_five_minute_rate"]; ok && fiveMinuteRate >= 0 {
+		pm.httpRequestRate.WithLabelValues(endpoint, "five_minute").Set(fiveMinuteRate)
+	}
+	if fifteenMinuteRate, ok := metrics["requests_200_fifteen_minute_rate"]; ok && fifteenMinuteRate >= 0 {
+		pm.httpRequestRate.WithLabelValues(endpoint, "fifteen_minute").Set(fifteenMinuteRate)
+	}
+	if meanRate, ok := metrics["requests_200_mean_rate"]; ok && meanRate >= 0 {
+		pm.httpRequestRate.WithLabelValues(endpoint, "mean").Set(meanRate)
+	}
+
+	// 更新服务时间分位数指标
+	if p50, ok := metrics["service_time_50th_percentile"]; ok && p50 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "50").Set(p50)
+	}
+	if p75, ok := metrics["service_time_75th_percentile"]; ok && p75 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "75").Set(p75)
+	}
+	if p95, ok := metrics["service_time_95th_percentile"]; ok && p95 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "95").Set(p95)
+	}
+	if p98, ok := metrics["service_time_98th_percentile"]; ok && p98 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "98").Set(p98)
+	}
+	if p99, ok := metrics["service_time_99th_percentile"]; ok && p99 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "99").Set(p99)
+	}
+	if p999, ok := metrics["service_time_999th_percentile"]; ok && p999 >= 0 {
+		pm.httpServiceTimePercentiles.WithLabelValues(endpoint, "999").Set(p999)
+	}
+
+	// 更新服务时间统计指标
+	if mean, ok := metrics["service_time_mean"]; ok && mean >= 0 {
+		pm.httpServiceTimeStats.WithLabelValues(endpoint, "mean").Set(mean)
+	}
+	if stddev, ok := metrics["service_time_stddev"]; ok && stddev >= 0 {
+		pm.httpServiceTimeStats.WithLabelValues(endpoint, "stddev").Set(stddev)
+	}
+	if min, ok := metrics["service_time_min"]; ok && min >= 0 {
+		pm.httpServiceTimeStats.WithLabelValues(endpoint, "min").Set(min)
+	}
+	if max, ok := metrics["service_time_max"]; ok && max >= 0 {
+		pm.httpServiceTimeStats.WithLabelValues(endpoint, "max").Set(max)
 	}
 }

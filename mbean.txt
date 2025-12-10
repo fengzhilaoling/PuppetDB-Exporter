@@ -1,0 +1,457 @@
+jdk.management.jfr:type=FlightRecorder
+java.util.logging:type=Logging
+puppetlabs.puppetdb.mq:name=global.awaiting-retry
+puppetlabs.puppetdb.mq:name=global.command-parse-time
+puppetlabs.puppetdb.mq:name=global.concurrent-depth
+puppetlabs.puppetdb.mq:name=global.depth
+puppetlabs.puppetdb.mq:name=global.discarded
+puppetlabs.puppetdb.mq:name=global.fatal
+puppetlabs.puppetdb.mq:name=global.ignored
+puppetlabs.puppetdb.mq:name=global.invalidated
+puppetlabs.puppetdb.mq:name=global.message-persistence-time
+puppetlabs.puppetdb.mq:name=global.processed
+puppetlabs.puppetdb.mq:name=global.processing-time
+puppetlabs.puppetdb.mq:name=global.queue-time
+puppetlabs.puppetdb.mq:name=global.retried
+puppetlabs.puppetdb.mq:name=global.retry-counts
+puppetlabs.puppetdb.mq:name=global.seen
+puppetlabs.puppetdb.mq:name=global.size
+puppetlabs.puppetdb.mq:name=replace catalog.9.awaiting-retry
+puppetlabs.puppetdb.mq:name=replace catalog.9.depth
+puppetlabs.puppetdb.mq:name=replace catalog.9.discarded
+puppetlabs.puppetdb.mq:name=replace catalog.9.fatal
+puppetlabs.puppetdb.mq:name=replace catalog.9.ignored
+puppetlabs.puppetdb.mq:name=replace catalog.9.invalidated
+puppetlabs.puppetdb.mq:name=replace catalog.9.message-persistence-time
+puppetlabs.puppetdb.mq:name=replace catalog.9.processed
+puppetlabs.puppetdb.mq:name=replace catalog.9.processing-time
+puppetlabs.puppetdb.mq:name=replace catalog.9.queue-time
+puppetlabs.puppetdb.mq:name=replace catalog.9.retried
+puppetlabs.puppetdb.mq:name=replace catalog.9.retry-counts
+puppetlabs.puppetdb.mq:name=replace catalog.9.seen
+puppetlabs.puppetdb.mq:name=replace catalog.9.size
+puppetlabs.puppetdb.mq:name=replace facts.5.awaiting-retry
+puppetlabs.puppetdb.mq:name=replace facts.5.depth
+puppetlabs.puppetdb.mq:name=replace facts.5.discarded
+puppetlabs.puppetdb.mq:name=replace facts.5.fatal
+puppetlabs.puppetdb.mq:name=replace facts.5.ignored
+puppetlabs.puppetdb.mq:name=replace facts.5.invalidated
+puppetlabs.puppetdb.mq:name=replace facts.5.message-persistence-time
+puppetlabs.puppetdb.mq:name=replace facts.5.processed
+puppetlabs.puppetdb.mq:name=replace facts.5.processing-time
+puppetlabs.puppetdb.mq:name=replace facts.5.queue-time
+puppetlabs.puppetdb.mq:name=replace facts.5.retried
+puppetlabs.puppetdb.mq:name=replace facts.5.retry-counts
+puppetlabs.puppetdb.mq:name=replace facts.5.seen
+puppetlabs.puppetdb.mq:name=replace facts.5.size
+puppetlabs.puppetdb.mq:name=store report.8.awaiting-retry
+puppetlabs.puppetdb.mq:name=store report.8.depth
+puppetlabs.puppetdb.mq:name=store report.8.discarded
+puppetlabs.puppetdb.mq:name=store report.8.fatal
+puppetlabs.puppetdb.mq:name=store report.8.ignored
+puppetlabs.puppetdb.mq:name=store report.8.invalidated
+puppetlabs.puppetdb.mq:name=store report.8.message-persistence-time
+puppetlabs.puppetdb.mq:name=store report.8.processed
+puppetlabs.puppetdb.mq:name=store report.8.processing-time
+puppetlabs.puppetdb.mq:name=store report.8.queue-time
+puppetlabs.puppetdb.mq:name=store report.8.retried
+puppetlabs.puppetdb.mq:name=store report.8.retry-counts
+puppetlabs.puppetdb.mq:name=store report.8.seen
+puppetlabs.puppetdb.mq:name=store report.8.size
+org.eclipse.jetty.util.component:id=0,type=attributecontainermap
+puppetlabs.puppetdb.population:name=avg-resources-per-node
+puppetlabs.puppetdb.population:name=num-active-nodes
+puppetlabs.puppetdb.population:name=num-inactive-nodes
+puppetlabs.puppetdb.population:name=num-nodes
+puppetlabs.puppetdb.population:name=num-resources
+puppetlabs.puppetdb.population:name=pct-resource-dupes
+org.eclipse.jetty.jmx:id=0,type=mbeancontainer
+org.eclipse.jetty.util:id=0,type=pool
+org.eclipse.jetty.util:id=1,type=pool
+java.nio:name=direct,type=BufferPool
+java.nio:name=mapped - 'non-volatile memory',type=BufferPool
+java.nio:name=mapped,type=BufferPool
+puppetlabs.puppetdb.http:name=/pdb
+puppetlabs.puppetdb.http:name=/pdb.200
+puppetlabs.puppetdb.http:name=/pdb.service-time
+puppetlabs.puppetdb.http:name=/pdb/cmd.200
+puppetlabs.puppetdb.http:name=/pdb/cmd.service-time
+puppetlabs.puppetdb.http:name=/pdb/cmd/v1.200
+puppetlabs.puppetdb.http:name=/pdb/cmd/v1.service-time
+puppetlabs.puppetdb.http:name=/pdb/query
+puppetlabs.puppetdb.http:name=/pdb/query.200
+puppetlabs.puppetdb.http:name=/pdb/query.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4
+puppetlabs.puppetdb.http:name=/pdb/query/v4.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/metrics
+puppetlabs.puppetdb.http:name=/pdb/query/v4/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/metrics/v2
+puppetlabs.puppetdb.http:name=/pdb/query/v4/metrics/v2.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes/qdpuppet-web2.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes/qdpuppet-web2.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes/qdpuppet-web2/facts.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/nodes/qdpuppet-web2/facts.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query/v4
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query/v4.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query/v4/nodes
+puppetlabs.puppetdb.http:name=/pdb/query/v4/pdb/query/v4/nodes.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/047b070d066c70460ad13950f00cf142bd9d027b.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/047b070d066c70460ad13950f00cf142bd9d027b.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/047b070d066c70460ad13950f00cf142bd9d027b/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/047b070d066c70460ad13950f00cf142bd9d027b/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/09fc406e6a176c28448f37e1be78c5b6c5deb7e9.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/09fc406e6a176c28448f37e1be78c5b6c5deb7e9.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/09fc406e6a176c28448f37e1be78c5b6c5deb7e9/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/09fc406e6a176c28448f37e1be78c5b6c5deb7e9/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1ae14ec963cb9e38b64c08c937d91f912aa729b5.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1ae14ec963cb9e38b64c08c937d91f912aa729b5.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1ae14ec963cb9e38b64c08c937d91f912aa729b5/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1ae14ec963cb9e38b64c08c937d91f912aa729b5/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1df7c7246b5714d9b1cd3c6eedd4d68c9bd319e9.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1df7c7246b5714d9b1cd3c6eedd4d68c9bd319e9.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1df7c7246b5714d9b1cd3c6eedd4d68c9bd319e9/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1df7c7246b5714d9b1cd3c6eedd4d68c9bd319e9/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fa542a20b185e741f8672fd51b0cc8b79746bed.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fa542a20b185e741f8672fd51b0cc8b79746bed.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fa542a20b185e741f8672fd51b0cc8b79746bed/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fa542a20b185e741f8672fd51b0cc8b79746bed/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fd6c18ce47a2e98818278fc800b342db671c381.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fd6c18ce47a2e98818278fc800b342db671c381.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fd6c18ce47a2e98818278fc800b342db671c381/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/1fd6c18ce47a2e98818278fc800b342db671c381/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/219bc258dbed653a20847648da5abece1a4ff986.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/219bc258dbed653a20847648da5abece1a4ff986.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/219bc258dbed653a20847648da5abece1a4ff986/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/219bc258dbed653a20847648da5abece1a4ff986/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/2481aa47b1cd49ed06f98ad861ec876cb0ef430a.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/2481aa47b1cd49ed06f98ad861ec876cb0ef430a.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/2481aa47b1cd49ed06f98ad861ec876cb0ef430a/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/2481aa47b1cd49ed06f98ad861ec876cb0ef430a/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/3dec2576d01d94a44b81276e7956cd988ace8820.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/3dec2576d01d94a44b81276e7956cd988ace8820.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/3dec2576d01d94a44b81276e7956cd988ace8820/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/3dec2576d01d94a44b81276e7956cd988ace8820/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/41769315dee5f35204b1dfada3bac191d775f876.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/41769315dee5f35204b1dfada3bac191d775f876.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/41769315dee5f35204b1dfada3bac191d775f876/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/41769315dee5f35204b1dfada3bac191d775f876/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4bd89b797f2710c6f18bf49d483d71ff87d2ad84.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4bd89b797f2710c6f18bf49d483d71ff87d2ad84.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4bd89b797f2710c6f18bf49d483d71ff87d2ad84/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4bd89b797f2710c6f18bf49d483d71ff87d2ad84/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4c9fe19e9cc2d316b50e976716d3d9f27401ce9c.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4c9fe19e9cc2d316b50e976716d3d9f27401ce9c.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4c9fe19e9cc2d316b50e976716d3d9f27401ce9c/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/4c9fe19e9cc2d316b50e976716d3d9f27401ce9c/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/548a1fdea88d94bfcb50a769260d4761671551a4.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/548a1fdea88d94bfcb50a769260d4761671551a4.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/548a1fdea88d94bfcb50a769260d4761671551a4/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/548a1fdea88d94bfcb50a769260d4761671551a4/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/549b62500b3b3076db1a4b005d9246669172d22d.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/549b62500b3b3076db1a4b005d9246669172d22d.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/549b62500b3b3076db1a4b005d9246669172d22d/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/549b62500b3b3076db1a4b005d9246669172d22d/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/5da2289b24732a2e9f698d0edf6de11d7327f5eb.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/5da2289b24732a2e9f698d0edf6de11d7327f5eb.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/5da2289b24732a2e9f698d0edf6de11d7327f5eb/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/5da2289b24732a2e9f698d0edf6de11d7327f5eb/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/653899c5035501ad378d265c345f686ef4d3425b.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/653899c5035501ad378d265c345f686ef4d3425b.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/653899c5035501ad378d265c345f686ef4d3425b/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/653899c5035501ad378d265c345f686ef4d3425b/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/79c6349b2810bd7f9f38d97ae26449508e417eeb.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/79c6349b2810bd7f9f38d97ae26449508e417eeb.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/79c6349b2810bd7f9f38d97ae26449508e417eeb/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/79c6349b2810bd7f9f38d97ae26449508e417eeb/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7a6bd96dfa791de48914d3ad4aac03742e957d66.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7a6bd96dfa791de48914d3ad4aac03742e957d66.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7a6bd96dfa791de48914d3ad4aac03742e957d66/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7a6bd96dfa791de48914d3ad4aac03742e957d66/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7aa33d2e05b17d531b4aadf20603b59245fb4aca.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7aa33d2e05b17d531b4aadf20603b59245fb4aca.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7aa33d2e05b17d531b4aadf20603b59245fb4aca/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/7aa33d2e05b17d531b4aadf20603b59245fb4aca/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/848c904c31e74fbe4ef392fc563ee9190ee15c52.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/848c904c31e74fbe4ef392fc563ee9190ee15c52.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/848c904c31e74fbe4ef392fc563ee9190ee15c52/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/848c904c31e74fbe4ef392fc563ee9190ee15c52/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/85cf8ac2551deff709806f18f16ccc0e0e87aa00.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/85cf8ac2551deff709806f18f16ccc0e0e87aa00.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/85cf8ac2551deff709806f18f16ccc0e0e87aa00/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/85cf8ac2551deff709806f18f16ccc0e0e87aa00/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9127e9785c90a2b96d6eb5c17f1e5f4f0ad95a32.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9127e9785c90a2b96d6eb5c17f1e5f4f0ad95a32.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9127e9785c90a2b96d6eb5c17f1e5f4f0ad95a32/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9127e9785c90a2b96d6eb5c17f1e5f4f0ad95a32/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/94ecfe53cdc6353128267bccc46b5ff0db399ce1.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/94ecfe53cdc6353128267bccc46b5ff0db399ce1.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/94ecfe53cdc6353128267bccc46b5ff0db399ce1/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/94ecfe53cdc6353128267bccc46b5ff0db399ce1/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9810c53fe51c223a7b36f733cfb60fd37eef0a2c.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9810c53fe51c223a7b36f733cfb60fd37eef0a2c.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9810c53fe51c223a7b36f733cfb60fd37eef0a2c/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9810c53fe51c223a7b36f733cfb60fd37eef0a2c/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9826be6e7ef261d4484d65fe8487f3f67ea01ee9.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9826be6e7ef261d4484d65fe8487f3f67ea01ee9.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9826be6e7ef261d4484d65fe8487f3f67ea01ee9/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/9826be6e7ef261d4484d65fe8487f3f67ea01ee9/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/a74aa8034d190dfe7f721bf6bebd1a6292d7c3f5.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/a74aa8034d190dfe7f721bf6bebd1a6292d7c3f5.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/a74aa8034d190dfe7f721bf6bebd1a6292d7c3f5/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/a74aa8034d190dfe7f721bf6bebd1a6292d7c3f5/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ac271f7f58d259b9cb9f4e47445cea7945bab71f.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ac271f7f58d259b9cb9f4e47445cea7945bab71f.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ac271f7f58d259b9cb9f4e47445cea7945bab71f/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ac271f7f58d259b9cb9f4e47445cea7945bab71f/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ad1981364b921dd55cd939f8fac4dc097ce488cf.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ad1981364b921dd55cd939f8fac4dc097ce488cf.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ad1981364b921dd55cd939f8fac4dc097ce488cf/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ad1981364b921dd55cd939f8fac4dc097ce488cf/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/b111cee2b641c20296c391779c45ef2dfe626340.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/b111cee2b641c20296c391779c45ef2dfe626340.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/b111cee2b641c20296c391779c45ef2dfe626340/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/b111cee2b641c20296c391779c45ef2dfe626340/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c3c789350ce826eabc74c4e3de4428cc6f9b3472.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c3c789350ce826eabc74c4e3de4428cc6f9b3472.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c3c789350ce826eabc74c4e3de4428cc6f9b3472/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c3c789350ce826eabc74c4e3de4428cc6f9b3472/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c4afb6383443696ae5d04bcc972882773f52b688.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c4afb6383443696ae5d04bcc972882773f52b688.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c4afb6383443696ae5d04bcc972882773f52b688/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/c4afb6383443696ae5d04bcc972882773f52b688/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ce5e4de2575b267121417f95503f276f154f3909.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ce5e4de2575b267121417f95503f276f154f3909.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ce5e4de2575b267121417f95503f276f154f3909/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ce5e4de2575b267121417f95503f276f154f3909/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d058e17ea45bff0afc411c1a3e99c35f07cbd1bf.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d058e17ea45bff0afc411c1a3e99c35f07cbd1bf.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d058e17ea45bff0afc411c1a3e99c35f07cbd1bf/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d058e17ea45bff0afc411c1a3e99c35f07cbd1bf/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d280fa34cefe7ccd2b76b24c477210c8c3ca4d61.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d280fa34cefe7ccd2b76b24c477210c8c3ca4d61.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d280fa34cefe7ccd2b76b24c477210c8c3ca4d61/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d280fa34cefe7ccd2b76b24c477210c8c3ca4d61/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d4816ca9df56cbacc9e9324aa3cd10017a12ac5d.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d4816ca9df56cbacc9e9324aa3cd10017a12ac5d.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d4816ca9df56cbacc9e9324aa3cd10017a12ac5d/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d4816ca9df56cbacc9e9324aa3cd10017a12ac5d/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d60efd47cfb7bdbb96fb198504526f43552fc31b.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d60efd47cfb7bdbb96fb198504526f43552fc31b.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d60efd47cfb7bdbb96fb198504526f43552fc31b/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d60efd47cfb7bdbb96fb198504526f43552fc31b/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d79d1788a23aa576c6085f3f20a7d3192bba240d.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d79d1788a23aa576c6085f3f20a7d3192bba240d.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d79d1788a23aa576c6085f3f20a7d3192bba240d/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d79d1788a23aa576c6085f3f20a7d3192bba240d/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d8f9819bea723a522228d092049c925287308699.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d8f9819bea723a522228d092049c925287308699.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d8f9819bea723a522228d092049c925287308699/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/d8f9819bea723a522228d092049c925287308699/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/e96fba9f9560004bc20549d2d2c2111bf8844c13.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/e96fba9f9560004bc20549d2d2c2111bf8844c13.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/e96fba9f9560004bc20549d2d2c2111bf8844c13/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/e96fba9f9560004bc20549d2d2c2111bf8844c13/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ecd774ba0918550a9a3a0f5f27d5501263024a02.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ecd774ba0918550a9a3a0f5f27d5501263024a02.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ecd774ba0918550a9a3a0f5f27d5501263024a02/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/ecd774ba0918550a9a3a0f5f27d5501263024a02/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f566f72149ae00b1f501ad1f39d5aa7f656bcff4.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f566f72149ae00b1f501ad1f39d5aa7f656bcff4.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f566f72149ae00b1f501ad1f39d5aa7f656bcff4/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f566f72149ae00b1f501ad1f39d5aa7f656bcff4/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f6ae426a90eb6b756de096cc650fb746dec8c201.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f6ae426a90eb6b756de096cc650fb746dec8c201.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f6ae426a90eb6b756de096cc650fb746dec8c201/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/f6ae426a90eb6b756de096cc650fb746dec8c201/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/fc5008534d49edbd163b8b2e99d8566147a47736.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/fc5008534d49edbd163b8b2e99d8566147a47736.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/fc5008534d49edbd163b8b2e99d8566147a47736/metrics.200
+puppetlabs.puppetdb.http:name=/pdb/query/v4/reports/fc5008534d49edbd163b8b2e99d8566147a47736/metrics.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status/v1
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status/v1.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status/v1/services
+puppetlabs.puppetdb.http:name=/pdb/query/v4/status/v1/services.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/v4
+puppetlabs.puppetdb.http:name=/pdb/query/v4/v4.service-time
+puppetlabs.puppetdb.http:name=/pdb/query/v4/v4/nodes
+puppetlabs.puppetdb.http:name=/pdb/query/v4/v4/nodes.service-time
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.global.filesize
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.global.messages
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.replace catalog.filesize
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.replace catalog.messages
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.store report.filesize
+puppetlabs.puppetdb.dlo:name=puppetlabs.puppetdb.dlo.store report.messages
+JMImplementation:type=MBeanServerDelegate
+org.eclipse.jetty.util.thread:context=HTTP_1_1@258c34f,id=0,type=scheduledexecutorscheduler
+org.eclipse.jetty.util.thread:context=SSL_HTTP_1_1@b305a16,id=0,type=scheduledexecutorscheduler
+org.eclipse.jetty.util.thread:id=0,type=queuedthreadpool
+org.eclipse.jetty.util.thread:id=0,type=reservedthreadexecutor
+org.eclipse.jetty.util.thread:id=0,type=threadpoolbudget
+org.eclipse.jetty.io:context=HTTP_1_1@258c34f,id=0,type=logarithmicarraybytebufferpool$logarithmicretainablepool
+org.eclipse.jetty.io:context=HTTP_1_1@258c34f,id=0,type=managedselector
+org.eclipse.jetty.io:context=HTTP_1_1@258c34f,id=0,type=managedselector$selectorproducer
+org.eclipse.jetty.io:context=HTTP_1_1@258c34f,id=1,type=managedselector
+org.eclipse.jetty.io:context=HTTP_1_1@258c34f,id=1,type=managedselector$selectorproducer
+org.eclipse.jetty.io:context=SSL_HTTP_1_1@b305a16,id=0,type=managedselector
+org.eclipse.jetty.io:context=SSL_HTTP_1_1@b305a16,id=0,type=managedselector$selectorproducer
+org.eclipse.jetty.io:context=SSL_HTTP_1_1@b305a16,id=1,type=managedselector
+org.eclipse.jetty.io:context=SSL_HTTP_1_1@b305a16,id=1,type=managedselector$selectorproducer
+org.eclipse.jetty.io:id=0,type=logarithmicarraybytebufferpool
+com.puppetlabs.trapperkeeper.services.webserver.jetty10.utils:context=SSL_HTTP_1_1@b305a16,id=0,type=internalsslcontextfactory
+com.puppetlabs.trapperkeeper.services.webserver.jetty10.utils:id=0,type=mdcrequestloghandler
+com.puppetlabs.trapperkeeper.services.webserver.jetty10.utils:id=0,type=modifiedrequestlogimpl
+org.eclipse.jetty.servlet:context=ROOT,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-6116afcd,type=servletholder
+org.eclipse.jetty.servlet:context=ROOT,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-6116afcd,type=servletmapping
+org.eclipse.jetty.servlet:context=ROOT,id=0,type=servletcontexthandler
+org.eclipse.jetty.servlet:context=ROOT,id=0,type=servlethandler
+org.eclipse.jetty.servlet:context=pdb,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-7e73c6b6,type=servletholder
+org.eclipse.jetty.servlet:context=pdb,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-7e73c6b6,type=servletmapping
+org.eclipse.jetty.servlet:context=pdb,id=0,type=servletcontexthandler
+org.eclipse.jetty.servlet:context=pdb,id=0,type=servlethandler
+org.eclipse.jetty.servlet:context=status,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-63bdab24,type=servletholder
+org.eclipse.jetty.servlet:context=status,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-63bdab24,type=servletmapping
+org.eclipse.jetty.servlet:context=status,id=0,type=servletcontexthandler
+org.eclipse.jetty.servlet:context=status,id=0,type=servlethandler
+org.eclipse.jetty.servlet:context=v2,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-3d46263f,type=servletholder
+org.eclipse.jetty.servlet:context=v2,id=0,name=org_eclipse_jetty_servlet_ServletHandler$Default404Servlet-3d46263f,type=servletmapping
+org.eclipse.jetty.servlet:context=v2,id=0,name=puppetlabs_trapperkeeper_services_metrics_jolokia_proxy$org_jolokia_http_AgentServlet$ff19274a-4be35bbe,type=servletholder
+org.eclipse.jetty.servlet:context=v2,id=0,name=puppetlabs_trapperkeeper_services_metrics_jolokia_proxy$org_jolokia_http_AgentServlet$ff19274a-4be35bbe,type=servletmapping
+org.eclipse.jetty.servlet:context=v2,id=0,type=servletcontexthandler
+org.eclipse.jetty.servlet:context=v2,id=0,type=servlethandler
+jolokia:type=Config
+jolokia:type=Discovery
+jolokia:type=ServerHandler
+puppetlabs.puppetdb.admin:name=catalog-gc-time
+puppetlabs.puppetdb.admin:name=catalog-gcs
+puppetlabs.puppetdb.admin:name=cleaning
+puppetlabs.puppetdb.admin:name=fact-path-gc-time
+puppetlabs.puppetdb.admin:name=fact-path-gcs
+puppetlabs.puppetdb.admin:name=node-expiration-time
+puppetlabs.puppetdb.admin:name=node-expirations
+puppetlabs.puppetdb.admin:name=node-purge-time
+puppetlabs.puppetdb.admin:name=node-purges
+puppetlabs.puppetdb.admin:name=other-clean-time
+puppetlabs.puppetdb.admin:name=other-cleans
+puppetlabs.puppetdb.admin:name=package-gc-time
+puppetlabs.puppetdb.admin:name=package-gcs
+puppetlabs.puppetdb.admin:name=report-purge-time
+puppetlabs.puppetdb.admin:name=report-purges
+puppetlabs.puppetdb.admin:name=resource-event-purges
+puppetlabs.puppetdb.admin:name=resource-events-purge-time
+org.eclipse.jetty.server.session:context=v2,id=0,type=defaultsessioncache
+org.eclipse.jetty.server.session:context=v2,id=0,type=nullsessiondatastore
+org.eclipse.jetty.server.session:context=v2,id=0,type=sessionhandler
+org.eclipse.jetty.server.session:id=0,type=defaultsessionidmanager
+org.eclipse.jetty.server.session:id=0,type=housekeeper
+puppetlabs.puppetdb.storage:name=add-edges
+puppetlabs.puppetdb.storage:name=add-resources
+puppetlabs.puppetdb.storage:name=catalog-hash
+puppetlabs.puppetdb.storage:name=catalog-hash-match-time
+puppetlabs.puppetdb.storage:name=catalog-hash-miss-time
+puppetlabs.puppetdb.storage:name=catalog-volitilty
+puppetlabs.puppetdb.storage:name=duplicate-catalogs
+puppetlabs.puppetdb.storage:name=duplicate-pct
+puppetlabs.puppetdb.storage:name=gc-catalogs-time
+puppetlabs.puppetdb.storage:name=gc-environments-time
+puppetlabs.puppetdb.storage:name=gc-fact-paths
+puppetlabs.puppetdb.storage:name=gc-packages-time
+puppetlabs.puppetdb.storage:name=gc-params-time
+puppetlabs.puppetdb.storage:name=gc-report-statuses
+puppetlabs.puppetdb.storage:name=gc-time
+puppetlabs.puppetdb.storage:name=new-catalog-time
+puppetlabs.puppetdb.storage:name=new-catalogs
+puppetlabs.puppetdb.storage:name=new-fact-time
+puppetlabs.puppetdb.storage:name=replace-catalog-time
+puppetlabs.puppetdb.storage:name=replace-facts-time
+puppetlabs.puppetdb.storage:name=resource-hashes
+puppetlabs.puppetdb.storage:name=store-report-time
+org.eclipse.jetty.server.handler:id=0,type=contexthandlercollection
+org.eclipse.jetty.server.handler:id=0,type=errorhandler
+org.eclipse.jetty.server.handler:id=0,type=handlercollection
+org.eclipse.jetty.server.handler:id=0,type=statisticshandler
+org.eclipse.jetty.server.handler.gzip:id=0,type=gziphandler
+org.eclipse.jetty.util.thread.strategy:context=HTTP_1_1@258c34f,id=0,type=adaptiveexecutionstrategy
+org.eclipse.jetty.util.thread.strategy:context=HTTP_1_1@258c34f,id=1,type=adaptiveexecutionstrategy
+org.eclipse.jetty.util.thread.strategy:context=SSL_HTTP_1_1@b305a16,id=0,type=adaptiveexecutionstrategy
+org.eclipse.jetty.util.thread.strategy:context=SSL_HTTP_1_1@b305a16,id=1,type=adaptiveexecutionstrategy
+puppetlabs.trapperkeeper.services.webserver.jetty10_core.proxy$org.eclipse.jetty.server.handler:context=ROOT,id=0,type=handlerwrapper$ff19274a
+puppetlabs.trapperkeeper.services.webserver.jetty10_core.proxy$org.eclipse.jetty.server.handler:context=pdb,id=0,type=handlerwrapper$ff19274a
+puppetlabs.trapperkeeper.services.webserver.jetty10_core.proxy$org.eclipse.jetty.server.handler:context=status,id=0,type=handlerwrapper$ff19274a
+java.lang:name=CodeCacheManager,type=MemoryManager
+java.lang:name=CodeHeap 'non-nmethods',type=MemoryPool
+java.lang:name=CodeHeap 'non-profiled nmethods',type=MemoryPool
+java.lang:name=CodeHeap 'profiled nmethods',type=MemoryPool
+java.lang:name=Compressed Class Space,type=MemoryPool
+java.lang:name=G1 Eden Space,type=MemoryPool
+java.lang:name=G1 Old Gen,type=MemoryPool
+java.lang:name=G1 Old Generation,type=GarbageCollector
+java.lang:name=G1 Survivor Space,type=MemoryPool
+java.lang:name=G1 Young Generation,type=GarbageCollector
+java.lang:name=Metaspace Manager,type=MemoryManager
+java.lang:name=Metaspace,type=MemoryPool
+java.lang:type=ClassLoading
+java.lang:type=Compilation
+java.lang:type=Memory
+java.lang:type=OperatingSystem
+java.lang:type=Runtime
+java.lang:type=Threading
+com.sun.management:type=DiagnosticCommand
+com.sun.management:type=HotSpotDiagnostic
+jmx4perl:type=Config
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=abstractconnector$1
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=abstractconnector$acceptor
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=httpconfiguration
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=httpconnectionfactory
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=serverconnector
+org.eclipse.jetty.server:context=HTTP_1_1@258c34f,id=0,type=serverconnector$serverconnectormanager
+org.eclipse.jetty.server:context=ROOT,id=0,type=allowedresourcealiaschecker$allowedresourcealiaschecklistener
+org.eclipse.jetty.server:context=ROOT,id=0,type=symlinkallowedresourcealiaschecker
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=abstractconnector$1
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=abstractconnector$acceptor
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=httpconfiguration
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=httpconnectionfactory
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=serverconnector
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=serverconnector$serverconnectormanager
+org.eclipse.jetty.server:context=SSL_HTTP_1_1@b305a16,id=0,type=sslconnectionfactory
+org.eclipse.jetty.server:context=pdb,id=0,type=allowedresourcealiaschecker$allowedresourcealiaschecklistener
+org.eclipse.jetty.server:context=pdb,id=0,type=symlinkallowedresourcealiaschecker
+org.eclipse.jetty.server:context=status,id=0,type=allowedresourcealiaschecker$allowedresourcealiaschecklistener
+org.eclipse.jetty.server:context=status,id=0,type=symlinkallowedresourcealiaschecker
+org.eclipse.jetty.server:context=v2,id=0,type=allowedresourcealiaschecker$allowedresourcealiaschecklistener
+org.eclipse.jetty.server:context=v2,id=0,type=symlinkallowedresourcealiaschecker
+org.eclipse.jetty.server:id=0,type=server
+sun.nio.ch:context=HTTP_1_1@258c34f,id=0,type=serversocketchannelimpl
+sun.nio.ch:context=SSL_HTTP_1_1@b305a16,id=0,type=serversocketchannelimpl
+org.eclipse.jetty.util.compression:id=0,type=deflaterpool
+org.eclipse.jetty.util.compression:id=0,type=inflaterpool
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.ActiveConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.ConnectionCreation
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.ConnectionTimeoutRate
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.IdleConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.MaxConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.MinConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.PendingConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.TotalConnections
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.Usage
+puppetlabs.puppetdb.database:name=PDBReadPool.pool.Wait
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.ActiveConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.ConnectionCreation
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.ConnectionTimeoutRate
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.IdleConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.MaxConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.MinConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.PendingConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.TotalConnections
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.Usage
+puppetlabs.puppetdb.database:name=PDBWritePool.pool.Wait

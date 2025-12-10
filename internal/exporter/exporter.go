@@ -392,8 +392,16 @@ func (e *Exporter) Scrape(interval time.Duration, unreportedNode string, categor
 					jvmDetailedMetrics["jvm_threading_cpu_time_enabled"],
 				)
 			}
-		}
 
-		time.Sleep(interval)
+			// 收集HTTP详细指标
+			httpMetrics, err := e.metricsClient.GetHTTPMetrics()
+			if err == nil {
+				for endpoint, metrics := range httpMetrics {
+					e.metricsRegistry.GetPuppetDBMetrics().UpdateHTTPDetailedMetrics(endpoint, metrics)
+				}
+			}
+
+			time.Sleep(interval)
+		}
 	}
 }

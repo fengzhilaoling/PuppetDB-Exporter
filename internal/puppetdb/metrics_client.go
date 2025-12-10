@@ -420,21 +420,71 @@ func (mc *MetricsClient) GetHTTPMetrics() (map[string]map[string]float64, error)
 	metrics := make(map[string]map[string]float64)
 
 	// 主要HTTP端点
-	endpoints := []string{"/pdb/query/v4/nodes", "/pdb/query/v4/resources", "/metrics/v2/read", "/metrics/v2"}
+	endpoints := []string{"/pdb/query/v4/nodes", "/pdb/query/v4/resources", "/pdb/query/v4/reports", "/metrics/v2/read", "/metrics/v2"}
 
 	for _, endpoint := range endpoints {
 		metrics[endpoint] = make(map[string]float64)
 
-		// 获取服务时间
-		serviceTime, err := mc.getMBeanValue(fmt.Sprintf("puppetlabs.puppetdb.http:name=%s.service-time.mean", endpoint))
-		if err == nil {
-			metrics[endpoint]["service_time_mean"] = serviceTime
+		// 获取服务时间统计
+		serviceTimeData, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.http:name=%s.service-time", endpoint))
+		if err == nil && serviceTimeData != nil {
+			// 分位数统计
+			if val, ok := serviceTimeData["50thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_50th_percentile"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["75thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_75th_percentile"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["95thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_95th_percentile"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["98thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_98th_percentile"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["99thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_99th_percentile"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["999thPercentile"].(float64); ok {
+				metrics[endpoint]["service_time_999th_percentile"] = val / 1000.0 // 转换为秒
+			}
+
+			// 基础统计
+			if val, ok := serviceTimeData["Mean"].(float64); ok {
+				metrics[endpoint]["service_time_mean"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["StdDev"].(float64); ok {
+				metrics[endpoint]["service_time_stddev"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["Min"].(float64); ok {
+				metrics[endpoint]["service_time_min"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["Max"].(float64); ok {
+				metrics[endpoint]["service_time_max"] = val / 1000.0 // 转换为秒
+			}
+			if val, ok := serviceTimeData["Count"].(float64); ok {
+				metrics[endpoint]["service_time_count"] = val
+			}
 		}
 
-		// 获取请求计数（200状态码）
-		requestCount, err := mc.getMBeanValue(fmt.Sprintf("puppetlabs.puppetdb.http:name=%s.200.count", endpoint))
-		if err == nil {
-			metrics[endpoint]["requests_200"] = requestCount
+		// 获取请求计数统计（200状态码）
+		requestCountData, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.http:name=%s.200", endpoint))
+		if err == nil && requestCountData != nil {
+			// 请求速率统计
+			if val, ok := requestCountData["OneMinuteRate"].(float64); ok {
+				metrics[endpoint]["requests_200_one_minute_rate"] = val
+			}
+			if val, ok := requestCountData["FiveMinuteRate"].(float64); ok {
+				metrics[endpoint]["requests_200_five_minute_rate"] = val
+			}
+			if val, ok := requestCountData["FifteenMinuteRate"].(float64); ok {
+				metrics[endpoint]["requests_200_fifteen_minute_rate"] = val
+			}
+			if val, ok := requestCountData["MeanRate"].(float64); ok {
+				metrics[endpoint]["requests_200_mean_rate"] = val
+			}
+			if val, ok := requestCountData["Count"].(float64); ok {
+				metrics[endpoint]["requests_200_count"] = val
+			}
 		}
 	}
 
