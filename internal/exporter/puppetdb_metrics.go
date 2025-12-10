@@ -53,6 +53,25 @@ type PuppetDBMetrics struct {
 	dbPoolWait99thPercentile *prometheus.GaugeVec
 	dbPoolWaitMax            *prometheus.GaugeVec
 
+	// 数据库连接池配置指标
+	dbPoolMaxConnections *prometheus.GaugeVec
+	dbPoolMinConnections *prometheus.GaugeVec
+
+	// 数据库连接池连接创建统计指标
+	dbPoolConnectionCreationMean           *prometheus.GaugeVec
+	dbPoolConnectionCreation75thPercentile *prometheus.GaugeVec
+	dbPoolConnectionCreation95thPercentile *prometheus.GaugeVec
+	dbPoolConnectionCreation99thPercentile *prometheus.GaugeVec
+	dbPoolConnectionCreationMax            *prometheus.GaugeVec
+	dbPoolConnectionCreationCount          *prometheus.GaugeVec
+
+	// 数据库连接池连接超时率指标
+	dbPoolConnectionTimeoutRateOneMinute     *prometheus.GaugeVec
+	dbPoolConnectionTimeoutRateFiveMinute    *prometheus.GaugeVec
+	dbPoolConnectionTimeoutRateFifteenMinute *prometheus.GaugeVec
+	dbPoolConnectionTimeoutRateMean          *prometheus.GaugeVec
+	dbPoolConnectionTimeoutRateCount         *prometheus.GaugeVec
+
 	// JVM 指标
 	jvmMemoryUsed    *prometheus.GaugeVec
 	jvmMemoryMax     *prometheus.GaugeVec
@@ -381,6 +400,126 @@ func NewPuppetDBMetrics(namespace string) *PuppetDBMetrics {
 			Namespace: namespace,
 			Name:      "db_pool_wait_max_seconds",
 			Help:      "Maximum wait time for database pool connections in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	// 数据库连接池配置指标
+	pm.dbPoolMaxConnections = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_max_connections",
+			Help:      "Maximum number of connections in the database pool",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolMinConnections = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_min_connections",
+			Help:      "Minimum number of connections in the database pool",
+		},
+		[]string{"pool"},
+	)
+
+	// 数据库连接池连接创建统计指标
+	pm.dbPoolConnectionCreationMean = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_mean_ms",
+			Help:      "Mean time for database connection creation in milliseconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionCreation75thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_75th_percentile_ms",
+			Help:      "75th percentile of database connection creation time in milliseconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionCreation95thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_95th_percentile_ms",
+			Help:      "95th percentile of database connection creation time in milliseconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionCreation99thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_99th_percentile_ms",
+			Help:      "99th percentile of database connection creation time in milliseconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionCreationMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_max_ms",
+			Help:      "Maximum time for database connection creation in milliseconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionCreationCount = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_creation_count",
+			Help:      "Total count of database connection creation operations",
+		},
+		[]string{"pool"},
+	)
+
+	// 数据库连接池连接超时率指标
+	pm.dbPoolConnectionTimeoutRateOneMinute = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_timeout_rate_one_minute",
+			Help:      "One minute rate of database connection timeouts per second",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionTimeoutRateFiveMinute = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_timeout_rate_five_minute",
+			Help:      "Five minute rate of database connection timeouts per second",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionTimeoutRateFifteenMinute = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_timeout_rate_fifteen_minute",
+			Help:      "Fifteen minute rate of database connection timeouts per second",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionTimeoutRateMean = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_timeout_rate_mean",
+			Help:      "Mean rate of database connection timeouts per second",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolConnectionTimeoutRateCount = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_connection_timeout_rate_count",
+			Help:      "Total count of database connection timeouts",
 		},
 		[]string{"pool"},
 	)
@@ -745,6 +884,25 @@ func (pm *PuppetDBMetrics) Register() {
 	prometheus.MustRegister(pm.dbPoolWait99thPercentile)
 	prometheus.MustRegister(pm.dbPoolWaitMax)
 
+	// 数据库连接池配置指标
+	prometheus.MustRegister(pm.dbPoolMaxConnections)
+	prometheus.MustRegister(pm.dbPoolMinConnections)
+
+	// 数据库连接池连接创建统计指标
+	prometheus.MustRegister(pm.dbPoolConnectionCreationMean)
+	prometheus.MustRegister(pm.dbPoolConnectionCreation75thPercentile)
+	prometheus.MustRegister(pm.dbPoolConnectionCreation95thPercentile)
+	prometheus.MustRegister(pm.dbPoolConnectionCreation99thPercentile)
+	prometheus.MustRegister(pm.dbPoolConnectionCreationMax)
+	prometheus.MustRegister(pm.dbPoolConnectionCreationCount)
+
+	// 数据库连接池连接超时率指标
+	prometheus.MustRegister(pm.dbPoolConnectionTimeoutRateOneMinute)
+	prometheus.MustRegister(pm.dbPoolConnectionTimeoutRateFiveMinute)
+	prometheus.MustRegister(pm.dbPoolConnectionTimeoutRateFifteenMinute)
+	prometheus.MustRegister(pm.dbPoolConnectionTimeoutRateMean)
+	prometheus.MustRegister(pm.dbPoolConnectionTimeoutRateCount)
+
 	// JVM 指标
 	prometheus.MustRegister(pm.jvmMemoryUsed)
 	prometheus.MustRegister(pm.jvmMemoryMax)
@@ -898,6 +1056,57 @@ func (pm *PuppetDBMetrics) UpdateDBPoolWaitStats(pool string, mean float64, p75 
 	}
 	if max >= 0 {
 		pm.dbPoolWaitMax.WithLabelValues(pool).Set(max)
+	}
+}
+
+// UpdateDBPoolConfig 更新数据库连接池配置指标
+func (pm *PuppetDBMetrics) UpdateDBPoolConfig(pool string, maxConnections float64, minConnections float64) {
+	if maxConnections >= 0 {
+		pm.dbPoolMaxConnections.WithLabelValues(pool).Set(maxConnections)
+	}
+	if minConnections >= 0 {
+		pm.dbPoolMinConnections.WithLabelValues(pool).Set(minConnections)
+	}
+}
+
+// UpdateDBPoolConnectionCreationStats 更新数据库连接池连接创建统计
+func (pm *PuppetDBMetrics) UpdateDBPoolConnectionCreationStats(pool string, mean float64, p75 float64, p95 float64, p99 float64, max float64, count float64) {
+	if mean >= 0 {
+		pm.dbPoolConnectionCreationMean.WithLabelValues(pool).Set(mean)
+	}
+	if p75 >= 0 {
+		pm.dbPoolConnectionCreation75thPercentile.WithLabelValues(pool).Set(p75)
+	}
+	if p95 >= 0 {
+		pm.dbPoolConnectionCreation95thPercentile.WithLabelValues(pool).Set(p95)
+	}
+	if p99 >= 0 {
+		pm.dbPoolConnectionCreation99thPercentile.WithLabelValues(pool).Set(p99)
+	}
+	if max >= 0 {
+		pm.dbPoolConnectionCreationMax.WithLabelValues(pool).Set(max)
+	}
+	if count >= 0 {
+		pm.dbPoolConnectionCreationCount.WithLabelValues(pool).Set(count)
+	}
+}
+
+// UpdateDBPoolConnectionTimeoutRateStats 更新数据库连接池连接超时率统计
+func (pm *PuppetDBMetrics) UpdateDBPoolConnectionTimeoutRateStats(pool string, oneMinute float64, fiveMinute float64, fifteenMinute float64, mean float64, count float64) {
+	if oneMinute >= 0 {
+		pm.dbPoolConnectionTimeoutRateOneMinute.WithLabelValues(pool).Set(oneMinute)
+	}
+	if fiveMinute >= 0 {
+		pm.dbPoolConnectionTimeoutRateFiveMinute.WithLabelValues(pool).Set(fiveMinute)
+	}
+	if fifteenMinute >= 0 {
+		pm.dbPoolConnectionTimeoutRateFifteenMinute.WithLabelValues(pool).Set(fifteenMinute)
+	}
+	if mean >= 0 {
+		pm.dbPoolConnectionTimeoutRateMean.WithLabelValues(pool).Set(mean)
+	}
+	if count >= 0 {
+		pm.dbPoolConnectionTimeoutRateCount.WithLabelValues(pool).Set(count)
 	}
 }
 

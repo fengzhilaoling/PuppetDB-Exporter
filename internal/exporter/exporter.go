@@ -263,6 +263,12 @@ func (e *Exporter) Scrape(interval time.Duration, unreportedNode string, categor
 					if pending, ok := metrics["PendingConnections"]; ok {
 						e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolPendingConnections(pool, pending)
 					}
+					// 更新连接池配置指标
+					if maxConnections, ok := metrics["MaxConnections"]; ok {
+						if minConnections, ok2 := metrics["MinConnections"]; ok2 {
+							e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolConfig(pool, maxConnections, minConnections)
+						}
+					}
 				}
 			}
 
@@ -287,6 +293,32 @@ func (e *Exporter) Scrape(interval time.Duration, unreportedNode string, categor
 						stats["Wait95thPercentile"],
 						stats["Wait99thPercentile"],
 						stats["WaitMax"],
+					)
+				}
+			}
+
+			// 收集数据库连接池连接创建和超时率统计指标
+			dbPoolCreationStats, err := e.metricsClient.GetDBPoolConnectionCreationMetrics()
+			if err == nil {
+				for pool, stats := range dbPoolCreationStats {
+					// 更新连接创建统计
+					e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolConnectionCreationStats(
+						pool,
+						stats["ConnectionCreationMean"],
+						stats["ConnectionCreation75thPercentile"],
+						stats["ConnectionCreation95thPercentile"],
+						stats["ConnectionCreation99thPercentile"],
+						stats["ConnectionCreationMax"],
+						stats["ConnectionCreationCount"],
+					)
+					// 更新连接超时率统计
+					e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolConnectionTimeoutRateStats(
+						pool,
+						stats["ConnectionTimeoutRateOneMinute"],
+						stats["ConnectionTimeoutRateFiveMinute"],
+						stats["ConnectionTimeoutRateFifteenMinute"],
+						stats["ConnectionTimeoutRateMean"],
+						stats["ConnectionTimeoutRateCount"],
 					)
 				}
 			}

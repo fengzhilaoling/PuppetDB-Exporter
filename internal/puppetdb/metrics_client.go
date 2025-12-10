@@ -120,6 +120,17 @@ func (mc *MetricsClient) GetDBMetrics() (map[string]map[string]float64, error) {
 		if err == nil {
 			metrics[pool]["PendingConnections"] = pendingValue
 		}
+
+		// 获取连接池配置指标
+		maxConnections, err := mc.getMBeanValue(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.MaxConnections", pool))
+		if err == nil {
+			metrics[pool]["MaxConnections"] = maxConnections
+		}
+
+		minConnections, err := mc.getMBeanValue(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.MinConnections", pool))
+		if err == nil {
+			metrics[pool]["MinConnections"] = minConnections
+		}
 	}
 
 	return metrics, nil
@@ -191,6 +202,85 @@ func (mc *MetricsClient) GetDBPoolUsageMetrics() (map[string]map[string]float64,
 			if val, ok := waitResult["Max"]; ok {
 				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
 					metrics[pool]["WaitMax"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+		}
+	}
+
+	return metrics, nil
+}
+
+// GetDBPoolConnectionCreationMetrics 获取数据库连接池连接创建统计指标
+func (mc *MetricsClient) GetDBPoolConnectionCreationMetrics() (map[string]map[string]float64, error) {
+	metrics := make(map[string]map[string]float64)
+	pools := []string{"PDBReadPool", "PDBWritePool"}
+
+	for _, pool := range pools {
+		metrics[pool] = make(map[string]float64)
+
+		// 获取ConnectionCreation统计
+		creationResult, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.ConnectionCreation", pool))
+		if err == nil && creationResult != nil {
+			// 提取关键百分位数和统计信息
+			if val, ok := creationResult["Mean"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreationMean"] = floatVal
+				}
+			}
+			if val, ok := creationResult["75thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreation75thPercentile"] = floatVal
+				}
+			}
+			if val, ok := creationResult["95thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreation95thPercentile"] = floatVal
+				}
+			}
+			if val, ok := creationResult["99thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreation99thPercentile"] = floatVal
+				}
+			}
+			if val, ok := creationResult["Max"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreationMax"] = floatVal
+				}
+			}
+			if val, ok := creationResult["Count"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionCreationCount"] = floatVal
+				}
+			}
+		}
+
+		// 获取ConnectionTimeoutRate统计
+		timeoutResult, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.ConnectionTimeoutRate", pool))
+		if err == nil && timeoutResult != nil {
+			// 提取速率统计信息
+			if val, ok := timeoutResult["OneMinuteRate"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionTimeoutRateOneMinute"] = floatVal
+				}
+			}
+			if val, ok := timeoutResult["FiveMinuteRate"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionTimeoutRateFiveMinute"] = floatVal
+				}
+			}
+			if val, ok := timeoutResult["FifteenMinuteRate"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionTimeoutRateFifteenMinute"] = floatVal
+				}
+			}
+			if val, ok := timeoutResult["MeanRate"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionTimeoutRateMean"] = floatVal
+				}
+			}
+			if val, ok := timeoutResult["Count"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["ConnectionTimeoutRateCount"] = floatVal
 				}
 			}
 		}
