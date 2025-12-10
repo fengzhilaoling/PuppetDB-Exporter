@@ -1,0 +1,131 @@
+# 多平台交叉编译Makefile for Prometheus PuppetDB Exporter
+
+DEPS = $(wildcard */*.go)
+VERSION = $(shell git describe --always --dirty)
+COMMIT_SHA1 = $(shell git rev-parse HEAD)
+BUILD_DATE = $(shell date +%Y-%m-%d)
+
+# 默认构建Linux amd64
+GOOS = linux
+GOARCH = amd64
+
+# 支持的平台列表
+PLATFORMS = linux/amd64 linux/arm64 linux/386 \
+           darwin/amd64 darwin/arm64 \
+           windows/amd64 windows/386
+
+# 构建输出目录
+BUILD_DIR = build
+
+# 默认目标
+all: lint vet build-local
+
+# 本地构建（当前平台）
+build-local: prometheus-puppetdb-exporter
+
+# 交叉编译Linux版本
+build-linux: build-linux-amd64 build-linux-arm64 build-linux-386
+
+# 交叉编译所有平台
+build-all: $(PLATFORMS)
+
+# 通用构建规则
+$(PLATFORMS):
+	$(eval GOOS=$(word 1,$(subst /, ,$@)))
+	$(eval GOARCH=$(word 2,$(subst /, ,$@)))
+	$(eval OUTPUT_NAME=prometheus-puppetdb-exporter-$(GOOS)-$(GOARCH))
+	$(eval OUTPUT_PATH=$(BUILD_DIR)/$(OUTPUT_NAME))
+	@echo "Building for $(GOOS)/$(GOARCH)..."
+	@mkdir -p $(BUILD_DIR)
+	GO111MODULE=on CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) \
+	  go build -a \
+		  -ldflags="-X main.version=$(VERSION) -X main.commitSha1=$(COMMIT_SHA1) -X main.buildDate=$(BUILD_DATE)" \
+	    -installsuffix cgo -o $(OUTPUT_PATH) main.go
+	@if [ "$(GOOS)" = "windows" ]; then \
+		echo "Windows build completed: $(OUTPUT_PATH).exe"; \
+	else \
+		strip $(OUTPUT_PATH); \
+		echo "Linux/Unix build completed: $(OUTPUT_PATH)"; \
+	fi
+
+# 快捷构建规则
+build-linux-amd64: linux/amd64
+build-linux-arm64: linux/arm64  
+build-linux-386: linux/386
+build-darwin-amd64: darwin/amd64
+build-darwin-arm64: darwin/arm64
+build-windows-amd64: windows/amd64
+build-windows-386: windows/386
+
+# 传统构建规则（向后兼容）
+prometheus-puppetdb-exporter: main.go $(DEPS)
+	GO111MODULE=on CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) \
+	  go build -a \
+		  -ldflags="-X main.version=$(VERSION) -X main.commitSha1=$(COMMIT_SHA1) -X main.buildDate=$(BUILD_DATE)" \
+	    -installsuffix cgo -o $@ main.go
+	strip $@
+
+# 发布包构建
+release-linux: build-linux
+	cd $(BUILD_DIR) && tar cvzf prometheus-puppetdb-exporter-$(VERSION)-linux.tar.gz prometheus-puppetdb-exporter-linux-*
+
+release-all: build-all
+	cd $(BUILD_DIR) && tar cvzf prometheus-puppetdb-exporter-$(VERSION)-all-platforms.tar.gz prometheus-puppetdb-exporter-*
+
+# Docker构建支持
+docker-build:
+	docker build -t prometheus-puppetdb-exporter:$(VERSION) .
+
+# 快速Linux构建（最常用的交叉编译）
+linux: build-linux-amd64
+	@echo "Linux build completed: $(BUILD_DIR)/prometheus-puppetdb-exporter-linux-amd64"
+
+# 清理构建文件
+clean:
+	rm -rf $(BUILD_DIR)
+	rm -f prometheus-puppetdb-exporter
+
+# 代码质量检查
+lint:
+	@GO111MODULE=off go get -v golang.org/x/lint/golint
+	@for file in $$(git ls-files '*.go' | grep -v '_workspace/'); do \
+		export output="$$(golint $${file} | grep -v 'type name will be used as docker.DockerInfo')"; \
+		[ -n "$${output}" ] && echo "$${output}" && export status=1; \
+	done; \
+	exit $${status:-0}
+
+vet: main.go
+	go vet $<
+
+# 显示帮助信息
+help:
+	@echo "Prometheus PuppetDB Exporter - Cross Platform Build"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  all              - Run lint, vet and build for current platform"
+	@echo "  build-local      - Build for current platform"
+	@echo "  build-linux      - Build for all Linux architectures"
+	@echo "  build-all        - Build for all supported platforms"
+	@echo "  linux            - Quick build for Linux amd64 (most common)"
+	@echo "  release-linux    - Create Linux release package"
+	@echo "  release-all      - Create all-platforms release package"
+	@echo "  docker-build     - Build Docker image"
+	@echo "  clean            - Clean build artifacts"
+	@echo "  lint             - Run golint"
+	@echo "  vet              - Run go vet"
+	@echo "  help             - Show this help message"
+	@echo ""
+	@echo "Platform-specific builds:"
+	@echo "  build-linux-amd64, build-linux-arm64, build-linux-386"
+	@echo "  build-darwin-amd64, build-darwin-arm64"
+	@echo "  build-windows-amd64, build-windows-386"
+
+.PHONY: all build-local build-linux build-all $(PLATFORMS) \
+        build-linux-amd64 build-linux-arm64 build-linux-386 \
+        build-darwin-amd64 build-darwin-arm64 \
+        build-windows-amd64 build-windows-386 \
+        prometheus-puppetdb-exporter release-linux release-all \
+        docker-build linux clean lint vet help
