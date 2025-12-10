@@ -259,6 +259,35 @@ func (e *Exporter) Scrape(interval time.Duration, unreportedNode string, categor
 						metrics["TotalConnections"],
 						metrics["WaitTime"],
 					)
+					// 更新待处理连接数
+					if pending, ok := metrics["PendingConnections"]; ok {
+						e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolPendingConnections(pool, pending)
+					}
+				}
+			}
+
+			// 收集数据库连接池高级统计指标
+			dbPoolStats, err := e.metricsClient.GetDBPoolUsageMetrics()
+			if err == nil {
+				for pool, stats := range dbPoolStats {
+					// 更新使用统计
+					e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolUsageStats(
+						pool,
+						stats["UsageMean"],
+						stats["Usage75thPercentile"],
+						stats["Usage95thPercentile"],
+						stats["Usage99thPercentile"],
+						stats["UsageMax"],
+					)
+					// 更新等待时间统计
+					e.metricsRegistry.GetPuppetDBMetrics().UpdateDBPoolWaitStats(
+						pool,
+						stats["WaitMean"],
+						stats["Wait75thPercentile"],
+						stats["Wait95thPercentile"],
+						stats["Wait99thPercentile"],
+						stats["WaitMax"],
+					)
 				}
 			}
 

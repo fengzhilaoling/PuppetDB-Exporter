@@ -282,7 +282,7 @@ groups:
 ## 🔧 性能优化
 
 ### 1. 批量API调用
-- 使用POST `/metrics/v1/mbeans` 批量获取指标
+- 使用POST `/metrics/v2/read` 批量获取指标
 - 减少网络往返次数
 
 ### 2. 缓存机制

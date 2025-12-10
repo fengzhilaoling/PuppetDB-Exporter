@@ -114,6 +114,86 @@ func (mc *MetricsClient) GetDBMetrics() (map[string]map[string]float64, error) {
 				metrics[pool][metric] = value
 			}
 		}
+
+		// 获取待处理连接数
+		pendingValue, err := mc.getMBeanValue(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.PendingConnections", pool))
+		if err == nil {
+			metrics[pool]["PendingConnections"] = pendingValue
+		}
+	}
+
+	return metrics, nil
+}
+
+// GetDBPoolUsageMetrics 获取数据库连接池使用统计指标
+func (mc *MetricsClient) GetDBPoolUsageMetrics() (map[string]map[string]float64, error) {
+	metrics := make(map[string]map[string]float64)
+	pools := []string{"PDBReadPool", "PDBWritePool"}
+
+	for _, pool := range pools {
+		metrics[pool] = make(map[string]float64)
+
+		// 获取Usage统计
+		usageResult, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.Usage", pool))
+		if err == nil && usageResult != nil {
+			// 提取关键百分位数和统计信息
+			if val, ok := usageResult["Mean"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["UsageMean"] = floatVal
+				}
+			}
+			if val, ok := usageResult["75thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Usage75thPercentile"] = floatVal
+				}
+			}
+			if val, ok := usageResult["95thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Usage95thPercentile"] = floatVal
+				}
+			}
+			if val, ok := usageResult["99thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Usage99thPercentile"] = floatVal
+				}
+			}
+			if val, ok := usageResult["Max"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["UsageMax"] = floatVal
+				}
+			}
+		}
+
+		// 获取Wait统计
+		waitResult, err := mc.getMBeanFullData(fmt.Sprintf("puppetlabs.puppetdb.database:name=%s.pool.Wait", pool))
+		if err == nil && waitResult != nil {
+			// 提取关键百分位数和统计信息
+			if val, ok := waitResult["Mean"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["WaitMean"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+			if val, ok := waitResult["75thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Wait75thPercentile"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+			if val, ok := waitResult["95thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Wait95thPercentile"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+			if val, ok := waitResult["99thPercentile"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["Wait99thPercentile"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+			if val, ok := waitResult["Max"]; ok {
+				if floatVal, err := mc.parseMBeanValue(val, pool); err == nil {
+					metrics[pool]["WaitMax"] = floatVal / 1000.0 // 转换为秒
+				}
+			}
+		}
 	}
 
 	return metrics, nil
@@ -202,7 +282,47 @@ func (mc *MetricsClient) getMBeanValue(mbeanName string) (float64, error) {
 
 	// 根据不同的MBean类型提取数值
 	return mc.extractValueFromMBean(result, mbeanName)
-} // GetMetricsBulk 批量获取多个MBean指标
+}
+
+// getMBeanFullData 获取MBean的完整数据（不提取具体值）
+func (mc *MetricsClient) getMBeanFullData(mbeanName string) (map[string]interface{}, error) {
+	// 使用 /metrics/v2/read 接口替代 /metrics/v1/mbeans
+	endpoint := "/metrics/v2/read"
+
+	// 准备请求体，使用新的格式
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"mbean": mbeanName,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := mc.Post(endpoint, "application/json", requestBody)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to get mbean %s: status %d", mbeanName, resp.StatusCode)
+	}
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	// 返回value字段中的数据
+	if val, ok := result["value"]; ok {
+		if valueMap, ok := val.(map[string]interface{}); ok {
+			return valueMap, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no value data found in MBean result for %s", mbeanName)
+}
+
+// GetMetricsBulk 批量获取多个MBean指标
 func (mc *MetricsClient) GetMetricsBulk(mbeanNames []string) (map[string]float64, error) {
 	endpoint := "/metrics/v2/read"
 

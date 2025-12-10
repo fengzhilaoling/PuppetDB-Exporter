@@ -31,7 +31,22 @@ type PuppetDBMetrics struct {
 	dbConnectionsActive  *prometheus.GaugeVec
 	dbConnectionsIdle    *prometheus.GaugeVec
 	dbConnectionsTotal   *prometheus.GaugeVec
+	dbConnectionsPending *prometheus.GaugeVec
 	dbConnectionWaitTime *prometheus.HistogramVec
+
+	// 数据库连接池使用统计指标
+	dbPoolUsageMean           *prometheus.GaugeVec
+	dbPoolUsage75thPercentile *prometheus.GaugeVec
+	dbPoolUsage95thPercentile *prometheus.GaugeVec
+	dbPoolUsage99thPercentile *prometheus.GaugeVec
+	dbPoolUsageMax            *prometheus.GaugeVec
+
+	// 数据库连接池等待时间统计指标
+	dbPoolWaitMean           *prometheus.GaugeVec
+	dbPoolWait75thPercentile *prometheus.GaugeVec
+	dbPoolWait95thPercentile *prometheus.GaugeVec
+	dbPoolWait99thPercentile *prometheus.GaugeVec
+	dbPoolWaitMax            *prometheus.GaugeVec
 
 	// JVM 指标
 	jvmMemoryUsed    *prometheus.GaugeVec
@@ -184,11 +199,112 @@ func NewPuppetDBMetrics(namespace string) *PuppetDBMetrics {
 		[]string{"pool"},
 	)
 
+	pm.dbConnectionsPending = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_connections_pending",
+			Help:      "Number of pending database connections",
+		},
+		[]string{"pool"},
+	)
+
 	pm.dbConnectionWaitTime = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Namespace: namespace,
 			Name:      "db_connection_wait_time_seconds",
 			Help:      "Database connection wait time in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	// 数据库连接池使用统计指标
+	pm.dbPoolUsageMean = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_usage_mean",
+			Help:      "Mean value of database pool usage",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolUsage75thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_usage_75th_percentile",
+			Help:      "75th percentile of database pool usage",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolUsage95thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_usage_95th_percentile",
+			Help:      "95th percentile of database pool usage",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolUsage99thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_usage_99th_percentile",
+			Help:      "99th percentile of database pool usage",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolUsageMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_usage_max",
+			Help:      "Maximum value of database pool usage",
+		},
+		[]string{"pool"},
+	)
+
+	// 数据库连接池等待时间统计指标
+	pm.dbPoolWaitMean = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_wait_mean_seconds",
+			Help:      "Mean wait time for database pool connections in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolWait75thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_wait_75th_percentile_seconds",
+			Help:      "75th percentile of wait time for database pool connections in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolWait95thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_wait_95th_percentile_seconds",
+			Help:      "95th percentile of wait time for database pool connections in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolWait99thPercentile = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_wait_99th_percentile_seconds",
+			Help:      "99th percentile of wait time for database pool connections in seconds",
+		},
+		[]string{"pool"},
+	)
+
+	pm.dbPoolWaitMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "db_pool_wait_max_seconds",
+			Help:      "Maximum wait time for database pool connections in seconds",
 		},
 		[]string{"pool"},
 	)
@@ -259,7 +375,22 @@ func (pm *PuppetDBMetrics) Register() {
 	prometheus.MustRegister(pm.dbConnectionsActive)
 	prometheus.MustRegister(pm.dbConnectionsIdle)
 	prometheus.MustRegister(pm.dbConnectionsTotal)
+	prometheus.MustRegister(pm.dbConnectionsPending)
 	prometheus.MustRegister(pm.dbConnectionWaitTime)
+
+	// 数据库连接池使用统计指标
+	prometheus.MustRegister(pm.dbPoolUsageMean)
+	prometheus.MustRegister(pm.dbPoolUsage75thPercentile)
+	prometheus.MustRegister(pm.dbPoolUsage95thPercentile)
+	prometheus.MustRegister(pm.dbPoolUsage99thPercentile)
+	prometheus.MustRegister(pm.dbPoolUsageMax)
+
+	// 数据库连接池等待时间统计指标
+	prometheus.MustRegister(pm.dbPoolWaitMean)
+	prometheus.MustRegister(pm.dbPoolWait75thPercentile)
+	prometheus.MustRegister(pm.dbPoolWait95thPercentile)
+	prometheus.MustRegister(pm.dbPoolWait99thPercentile)
+	prometheus.MustRegister(pm.dbPoolWaitMax)
 
 	// JVM 指标
 	prometheus.MustRegister(pm.jvmMemoryUsed)
@@ -326,6 +457,51 @@ func (pm *PuppetDBMetrics) UpdateDBMetrics(pool string, active float64, idle flo
 	}
 	if waitTime > 0 {
 		pm.dbConnectionWaitTime.WithLabelValues(pool).Observe(waitTime)
+	}
+}
+
+// UpdateDBPoolPendingConnections 更新数据库连接池待处理连接数
+func (pm *PuppetDBMetrics) UpdateDBPoolPendingConnections(pool string, pending float64) {
+	if pending >= 0 {
+		pm.dbConnectionsPending.WithLabelValues(pool).Set(pending)
+	}
+}
+
+// UpdateDBPoolUsageStats 更新数据库连接池使用统计
+func (pm *PuppetDBMetrics) UpdateDBPoolUsageStats(pool string, mean float64, p75 float64, p95 float64, p99 float64, max float64) {
+	if mean >= 0 {
+		pm.dbPoolUsageMean.WithLabelValues(pool).Set(mean)
+	}
+	if p75 >= 0 {
+		pm.dbPoolUsage75thPercentile.WithLabelValues(pool).Set(p75)
+	}
+	if p95 >= 0 {
+		pm.dbPoolUsage95thPercentile.WithLabelValues(pool).Set(p95)
+	}
+	if p99 >= 0 {
+		pm.dbPoolUsage99thPercentile.WithLabelValues(pool).Set(p99)
+	}
+	if max >= 0 {
+		pm.dbPoolUsageMax.WithLabelValues(pool).Set(max)
+	}
+}
+
+// UpdateDBPoolWaitStats 更新数据库连接池等待时间统计
+func (pm *PuppetDBMetrics) UpdateDBPoolWaitStats(pool string, mean float64, p75 float64, p95 float64, p99 float64, max float64) {
+	if mean >= 0 {
+		pm.dbPoolWaitMean.WithLabelValues(pool).Set(mean)
+	}
+	if p75 >= 0 {
+		pm.dbPoolWait75thPercentile.WithLabelValues(pool).Set(p75)
+	}
+	if p95 >= 0 {
+		pm.dbPoolWait95thPercentile.WithLabelValues(pool).Set(p95)
+	}
+	if p99 >= 0 {
+		pm.dbPoolWait99thPercentile.WithLabelValues(pool).Set(p99)
+	}
+	if max >= 0 {
+		pm.dbPoolWaitMax.WithLabelValues(pool).Set(max)
 	}
 }
 
