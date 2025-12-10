@@ -306,6 +306,92 @@ func (e *Exporter) Scrape(interval time.Duration, unreportedNode string, categor
 					e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMMetrics("", -1, -1, threads, "", 0)
 				}
 			}
+
+			// 收集详细的JVM指标（包括内存池、垃圾收集器、运行时系统等）
+			jvmDetailedMetrics, err := e.metricsClient.GetJVMComprehensiveMetrics()
+			if err == nil {
+				// 更新内存池指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMHeapMemoryPoolMetrics(
+					"g1_eden_space",
+					jvmDetailedMetrics["jvm_memory_pool_g1_eden_space_used_bytes"],
+					-1, -1, -1,
+				)
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMHeapMemoryPoolMetrics(
+					"g1_old_gen",
+					jvmDetailedMetrics["jvm_memory_pool_g1_old_gen_used_bytes"],
+					-1, -1, -1,
+				)
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMHeapMemoryPoolMetrics(
+					"g1_survivor_space",
+					jvmDetailedMetrics["jvm_memory_pool_g1_survivor_space_used_bytes"],
+					-1, -1, -1,
+				)
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMHeapMemoryPoolMetrics(
+					"metaspace",
+					jvmDetailedMetrics["jvm_memory_pool_metaspace_used_bytes"],
+					-1, -1, -1,
+				)
+
+				// 更新垃圾收集器指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMGarbageCollectorMetrics(
+					"g1_young_generation",
+					jvmDetailedMetrics["jvm_gc_g1_young_generation_collection_count"],
+					jvmDetailedMetrics["jvm_gc_g1_young_generation_collection_time_seconds"],
+					-1,
+				)
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMGarbageCollectorMetrics(
+					"g1_old_generation",
+					jvmDetailedMetrics["jvm_gc_g1_old_generation_collection_count"],
+					jvmDetailedMetrics["jvm_gc_g1_old_generation_collection_time_seconds"],
+					-1,
+				)
+
+				// 更新类加载指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMClassLoadingMetrics(
+					jvmDetailedMetrics["jvm_class_loading_loaded_class_count"],
+					jvmDetailedMetrics["jvm_class_loading_unloaded_class_count"],
+					jvmDetailedMetrics["jvm_class_loading_total_loaded_class_count"],
+				)
+
+				// 更新编译指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMCompilationMetrics(
+					jvmDetailedMetrics["jvm_compilation_total_time_seconds"],
+				)
+
+				// 更新操作系统指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMSysMetrics(
+					jvmDetailedMetrics["jvm_operating_system_open_file_descriptors"],
+					jvmDetailedMetrics["jvm_operating_system_committed_virtual_memory_bytes"],
+					jvmDetailedMetrics["jvm_operating_system_free_physical_memory_bytes"],
+					jvmDetailedMetrics["jvm_operating_system_system_load_average"],
+					jvmDetailedMetrics["jvm_operating_system_process_cpu_load"],
+					jvmDetailedMetrics["jvm_operating_system_free_swap_space_bytes"],
+					jvmDetailedMetrics["jvm_operating_system_total_physical_memory_bytes"],
+					jvmDetailedMetrics["jvm_operating_system_total_swap_space_bytes"],
+					jvmDetailedMetrics["jvm_operating_system_process_cpu_time_seconds"],
+					jvmDetailedMetrics["jvm_operating_system_max_file_descriptors"],
+					jvmDetailedMetrics["jvm_operating_system_system_cpu_load"],
+					jvmDetailedMetrics["jvm_operating_system_available_processors"],
+					jvmDetailedMetrics["jvm_operating_system_cpu_load"],
+					jvmDetailedMetrics["jvm_operating_system_free_memory_bytes"],
+				)
+
+				// 更新运行时指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMTimingMetrics(
+					jvmDetailedMetrics["jvm_runtime_uptime_seconds"],
+					jvmDetailedMetrics["jvm_runtime_start_time_seconds"],
+				)
+
+				// 更新线程指标
+				e.metricsRegistry.GetPuppetDBMetrics().UpdateJVMThreadingMetrics(
+					jvmDetailedMetrics["jvm_threading_total_started_threads"],
+					jvmDetailedMetrics["jvm_threading_peak_thread_count"],
+					jvmDetailedMetrics["jvm_threading_daemon_thread_count"],
+					jvmDetailedMetrics["jvm_threading_current_thread_allocated_bytes"],
+					jvmDetailedMetrics["jvm_threading_allocated_memory_enabled"],
+					jvmDetailedMetrics["jvm_threading_cpu_time_enabled"],
+				)
+			}
 		}
 
 		time.Sleep(interval)

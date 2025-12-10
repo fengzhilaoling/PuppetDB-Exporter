@@ -53,6 +53,49 @@ type PuppetDBMetrics struct {
 	jvmMemoryMax     *prometheus.GaugeVec
 	jvmThreadsActive prometheus.Gauge
 	jvmGCDuration    *prometheus.HistogramVec
+
+	// JVM 内存池指标
+	jvmMemoryPoolUsed      *prometheus.GaugeVec
+	jvmMemoryPoolCommitted *prometheus.GaugeVec
+	jvmMemoryPoolMax       *prometheus.GaugeVec
+	jvmMemoryPoolPeakUsed  *prometheus.GaugeVec
+
+	// JVM 垃圾收集器指标
+	jvmGCCollectionCount    *prometheus.CounterVec
+	jvmGCCollectionTime     *prometheus.CounterVec
+	jvmGCLastGcInfoDuration *prometheus.GaugeVec
+
+	// JVM 运行时系统指标
+	jvmClassLoadingLoadedClassCount      prometheus.Gauge
+	jvmClassLoadingUnloadedClassCount    prometheus.Counter
+	jvmClassLoadingTotalLoadedClassCount prometheus.Counter
+
+	jvmCompilationTotalTime prometheus.Counter
+
+	jvmOperatingSystemOpenFileDescriptors    prometheus.Gauge
+	jvmOperatingSystemCommittedVirtualMemory prometheus.Gauge
+	jvmOperatingSystemFreePhysicalMemory     prometheus.Gauge
+	jvmOperatingSystemSystemLoadAverage      prometheus.Gauge
+	jvmOperatingSystemProcessCpuLoad         prometheus.Gauge
+	jvmOperatingSystemFreeSwapSpace          prometheus.Gauge
+	jvmOperatingSystemTotalPhysicalMemory    prometheus.Gauge
+	jvmOperatingSystemTotalSwapSpace         prometheus.Gauge
+	jvmOperatingSystemProcessCpuTime         prometheus.Counter
+	jvmOperatingSystemMaxFileDescriptors     prometheus.Gauge
+	jvmOperatingSystemSystemCpuLoad          prometheus.Gauge
+	jvmOperatingSystemAvailableProcessors    prometheus.Gauge
+	jvmOperatingSystemCpuLoad                prometheus.Gauge
+	jvmOperatingSystemFreeMemory             prometheus.Gauge
+
+	jvmRuntimeUptime    prometheus.Counter
+	jvmRuntimeStartTime prometheus.Gauge
+
+	jvmThreadingTotalStartedThreads          prometheus.Counter
+	jvmThreadingPeakThreadCount              prometheus.Gauge
+	jvmThreadingDaemonThreadCount            prometheus.Gauge
+	jvmThreadingCurrentThreadAllocatedBytes  prometheus.Gauge
+	jvmThreadingThreadAllocatedMemoryEnabled prometheus.Gauge
+	jvmThreadingThreadCpuTimeEnabled         prometheus.Gauge
 }
 
 // NewPuppetDBMetrics 创建PuppetDB指标实例
@@ -345,6 +388,280 @@ func NewPuppetDBMetrics(namespace string) *PuppetDBMetrics {
 		[]string{"gc"},
 	)
 
+	// JVM 内存池指标
+	pm.jvmMemoryPoolUsed = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_memory_pool_used_bytes",
+			Help:      "JVM memory pool used in bytes",
+		},
+		[]string{"pool"},
+	)
+
+	pm.jvmMemoryPoolCommitted = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_memory_pool_committed_bytes",
+			Help:      "JVM memory pool committed in bytes",
+		},
+		[]string{"pool"},
+	)
+
+	pm.jvmMemoryPoolMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_memory_pool_max_bytes",
+			Help:      "JVM memory pool max in bytes",
+		},
+		[]string{"pool"},
+	)
+
+	pm.jvmMemoryPoolPeakUsed = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_memory_pool_peak_used_bytes",
+			Help:      "JVM memory pool peak used in bytes",
+		},
+		[]string{"pool"},
+	)
+
+	// JVM 垃圾收集器指标
+	pm.jvmGCCollectionCount = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_gc_collection_count",
+			Help:      "Total number of garbage collection events",
+		},
+		[]string{"gc"},
+	)
+
+	pm.jvmGCCollectionTime = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_gc_collection_time_seconds",
+			Help:      "Total time spent in garbage collection in seconds",
+		},
+		[]string{"gc"},
+	)
+
+	pm.jvmGCLastGcInfoDuration = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_gc_last_gc_info_duration_seconds",
+			Help:      "Duration of the last garbage collection in seconds",
+		},
+		[]string{"gc"},
+	)
+
+	// JVM 运行时系统指标
+	pm.jvmClassLoadingLoadedClassCount = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_class_loading_loaded_class_count",
+			Help:      "Number of classes currently loaded in the JVM",
+		},
+	)
+
+	pm.jvmClassLoadingUnloadedClassCount = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_class_loading_unloaded_class_count",
+			Help:      "Total number of classes unloaded by the JVM",
+		},
+	)
+
+	pm.jvmClassLoadingTotalLoadedClassCount = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_class_loading_total_loaded_class_count",
+			Help:      "Total number of classes loaded by the JVM",
+		},
+	)
+
+	pm.jvmCompilationTotalTime = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_compilation_total_time_seconds",
+			Help:      "Total time spent in JVM compilation in seconds",
+		},
+	)
+
+	pm.jvmOperatingSystemOpenFileDescriptors = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_open_file_descriptors",
+			Help:      "Number of open file descriptors",
+		},
+	)
+
+	pm.jvmOperatingSystemCommittedVirtualMemory = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_committed_virtual_memory_bytes",
+			Help:      "Amount of committed virtual memory in bytes",
+		},
+	)
+
+	pm.jvmOperatingSystemFreePhysicalMemory = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_free_physical_memory_bytes",
+			Help:      "Amount of free physical memory in bytes",
+		},
+	)
+
+	pm.jvmOperatingSystemSystemLoadAverage = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_system_load_average",
+			Help:      "System load average",
+		},
+	)
+
+	pm.jvmOperatingSystemProcessCpuLoad = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_process_cpu_load",
+			Help:      "Process CPU load",
+		},
+	)
+
+	pm.jvmOperatingSystemFreeSwapSpace = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_free_swap_space_bytes",
+			Help:      "Amount of free swap space in bytes",
+		},
+	)
+
+	pm.jvmOperatingSystemTotalPhysicalMemory = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_total_physical_memory_bytes",
+			Help:      "Total amount of physical memory in bytes",
+		},
+	)
+
+	pm.jvmOperatingSystemTotalSwapSpace = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_total_swap_space_bytes",
+			Help:      "Total amount of swap space in bytes",
+		},
+	)
+
+	pm.jvmOperatingSystemProcessCpuTime = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_process_cpu_time_seconds",
+			Help:      "Total CPU time used by the process in seconds",
+		},
+	)
+
+	pm.jvmOperatingSystemMaxFileDescriptors = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_max_file_descriptors",
+			Help:      "Maximum number of file descriptors",
+		},
+	)
+
+	pm.jvmOperatingSystemSystemCpuLoad = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_system_cpu_load",
+			Help:      "System CPU load",
+		},
+	)
+
+	pm.jvmOperatingSystemAvailableProcessors = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_available_processors",
+			Help:      "Number of available processors",
+		},
+	)
+
+	pm.jvmOperatingSystemCpuLoad = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_cpu_load",
+			Help:      "CPU load",
+		},
+	)
+
+	pm.jvmOperatingSystemFreeMemory = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_operating_system_free_memory_bytes",
+			Help:      "Amount of free memory in bytes",
+		},
+	)
+
+	pm.jvmRuntimeUptime = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_runtime_uptime_seconds",
+			Help:      "JVM runtime uptime in seconds",
+		},
+	)
+
+	pm.jvmRuntimeStartTime = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_runtime_start_time_seconds",
+			Help:      "JVM runtime start time in seconds since epoch",
+		},
+	)
+
+	pm.jvmThreadingTotalStartedThreads = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_total_started_threads",
+			Help:      "Total number of threads started",
+		},
+	)
+
+	pm.jvmThreadingPeakThreadCount = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_peak_thread_count",
+			Help:      "Peak number of threads",
+		},
+	)
+
+	pm.jvmThreadingDaemonThreadCount = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_daemon_thread_count",
+			Help:      "Number of daemon threads",
+		},
+	)
+
+	pm.jvmThreadingCurrentThreadAllocatedBytes = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_current_thread_allocated_bytes",
+			Help:      "Bytes allocated for the current thread",
+		},
+	)
+
+	pm.jvmThreadingThreadAllocatedMemoryEnabled = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_thread_allocated_memory_enabled",
+			Help:      "Whether thread allocated memory tracking is enabled",
+		},
+	)
+
+	pm.jvmThreadingThreadCpuTimeEnabled = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "jvm_threading_thread_cpu_time_enabled",
+			Help:      "Whether thread CPU time tracking is enabled",
+		},
+	)
+
 	return pm
 }
 
@@ -397,6 +714,49 @@ func (pm *PuppetDBMetrics) Register() {
 	prometheus.MustRegister(pm.jvmMemoryMax)
 	prometheus.MustRegister(pm.jvmThreadsActive)
 	prometheus.MustRegister(pm.jvmGCDuration)
+
+	// JVM 内存池指标
+	prometheus.MustRegister(pm.jvmMemoryPoolUsed)
+	prometheus.MustRegister(pm.jvmMemoryPoolCommitted)
+	prometheus.MustRegister(pm.jvmMemoryPoolMax)
+	prometheus.MustRegister(pm.jvmMemoryPoolPeakUsed)
+
+	// JVM 垃圾收集器指标
+	prometheus.MustRegister(pm.jvmGCCollectionCount)
+	prometheus.MustRegister(pm.jvmGCCollectionTime)
+	prometheus.MustRegister(pm.jvmGCLastGcInfoDuration)
+
+	// JVM 运行时系统指标
+	prometheus.MustRegister(pm.jvmClassLoadingLoadedClassCount)
+	prometheus.MustRegister(pm.jvmClassLoadingUnloadedClassCount)
+	prometheus.MustRegister(pm.jvmClassLoadingTotalLoadedClassCount)
+
+	prometheus.MustRegister(pm.jvmCompilationTotalTime)
+
+	prometheus.MustRegister(pm.jvmOperatingSystemOpenFileDescriptors)
+	prometheus.MustRegister(pm.jvmOperatingSystemCommittedVirtualMemory)
+	prometheus.MustRegister(pm.jvmOperatingSystemFreePhysicalMemory)
+	prometheus.MustRegister(pm.jvmOperatingSystemSystemLoadAverage)
+	prometheus.MustRegister(pm.jvmOperatingSystemProcessCpuLoad)
+	prometheus.MustRegister(pm.jvmOperatingSystemFreeSwapSpace)
+	prometheus.MustRegister(pm.jvmOperatingSystemTotalPhysicalMemory)
+	prometheus.MustRegister(pm.jvmOperatingSystemTotalSwapSpace)
+	prometheus.MustRegister(pm.jvmOperatingSystemProcessCpuTime)
+	prometheus.MustRegister(pm.jvmOperatingSystemMaxFileDescriptors)
+	prometheus.MustRegister(pm.jvmOperatingSystemSystemCpuLoad)
+	prometheus.MustRegister(pm.jvmOperatingSystemAvailableProcessors)
+	prometheus.MustRegister(pm.jvmOperatingSystemCpuLoad)
+	prometheus.MustRegister(pm.jvmOperatingSystemFreeMemory)
+
+	prometheus.MustRegister(pm.jvmRuntimeUptime)
+	prometheus.MustRegister(pm.jvmRuntimeStartTime)
+
+	prometheus.MustRegister(pm.jvmThreadingTotalStartedThreads)
+	prometheus.MustRegister(pm.jvmThreadingPeakThreadCount)
+	prometheus.MustRegister(pm.jvmThreadingDaemonThreadCount)
+	prometheus.MustRegister(pm.jvmThreadingCurrentThreadAllocatedBytes)
+	prometheus.MustRegister(pm.jvmThreadingThreadAllocatedMemoryEnabled)
+	prometheus.MustRegister(pm.jvmThreadingThreadCpuTimeEnabled)
 }
 
 // UpdateCommandMetrics 更新命令处理指标
@@ -523,5 +883,132 @@ func (pm *PuppetDBMetrics) UpdateJVMMetrics(memoryType string, used float64, max
 	}
 	if gcDuration > 0 {
 		pm.jvmGCDuration.WithLabelValues(gcType).Observe(gcDuration)
+	}
+}
+
+// UpdateJVMHeapMemoryPoolMetrics 更新JVM堆内存池指标
+func (pm *PuppetDBMetrics) UpdateJVMHeapMemoryPoolMetrics(pool string, used float64, committed float64, max float64, peakUsed float64) {
+	if used >= 0 {
+		pm.jvmMemoryPoolUsed.WithLabelValues(pool).Set(used)
+	}
+	if committed >= 0 {
+		pm.jvmMemoryPoolCommitted.WithLabelValues(pool).Set(committed)
+	}
+	if max >= 0 {
+		pm.jvmMemoryPoolMax.WithLabelValues(pool).Set(max)
+	}
+	if peakUsed >= 0 {
+		pm.jvmMemoryPoolPeakUsed.WithLabelValues(pool).Set(peakUsed)
+	}
+}
+
+// UpdateJVMGarbageCollectorMetrics 更新JVM垃圾收集器指标
+func (pm *PuppetDBMetrics) UpdateJVMGarbageCollectorMetrics(gc string, collectionCount float64, collectionTime float64, lastGcInfoDuration float64) {
+	if collectionCount >= 0 {
+		pm.jvmGCCollectionCount.WithLabelValues(gc).Set(collectionCount)
+	}
+	if collectionTime >= 0 {
+		pm.jvmGCCollectionTime.WithLabelValues(gc).Set(collectionTime)
+	}
+	if lastGcInfoDuration >= 0 {
+		pm.jvmGCLastGcInfoDuration.WithLabelValues(gc).Set(lastGcInfoDuration)
+	}
+}
+
+// UpdateJVMClassLoadingMetrics 更新JVM类加载指标
+func (pm *PuppetDBMetrics) UpdateJVMClassLoadingMetrics(loadedClassCount float64, unloadedClassCount float64, totalLoadedClassCount float64) {
+	if loadedClassCount >= 0 {
+		pm.jvmClassLoadingLoadedClassCount.Set(loadedClassCount)
+	}
+	if unloadedClassCount >= 0 {
+		pm.jvmClassLoadingUnloadedClassCount.Add(unloadedClassCount)
+	}
+	if totalLoadedClassCount >= 0 {
+		pm.jvmClassLoadingTotalLoadedClassCount.Add(totalLoadedClassCount)
+	}
+}
+
+// UpdateJVMCompilationMetrics 更新JVM编译指标
+func (pm *PuppetDBMetrics) UpdateJVMCompilationMetrics(totalTime float64) {
+	if totalTime >= 0 {
+		pm.jvmCompilationTotalTime.Add(totalTime)
+	}
+}
+
+// UpdateJVMSysMetrics 更新JVM系统指标
+func (pm *PuppetDBMetrics) UpdateJVMSysMetrics(openFileDescriptors float64, committedVirtualMemory float64, freePhysicalMemory float64, systemLoadAverage float64, processCpuLoad float64, freeSwapSpace float64, totalPhysicalMemory float64, totalSwapSpace float64, processCpuTime float64, maxFileDescriptors float64, systemCpuLoad float64, availableProcessors float64, cpuLoad float64, freeMemory float64) {
+	if openFileDescriptors >= 0 {
+		pm.jvmOperatingSystemOpenFileDescriptors.Set(openFileDescriptors)
+	}
+	if committedVirtualMemory >= 0 {
+		pm.jvmOperatingSystemCommittedVirtualMemory.Set(committedVirtualMemory)
+	}
+	if freePhysicalMemory >= 0 {
+		pm.jvmOperatingSystemFreePhysicalMemory.Set(freePhysicalMemory)
+	}
+	if systemLoadAverage >= 0 {
+		pm.jvmOperatingSystemSystemLoadAverage.Set(systemLoadAverage)
+	}
+	if processCpuLoad >= 0 {
+		pm.jvmOperatingSystemProcessCpuLoad.Set(processCpuLoad)
+	}
+	if freeSwapSpace >= 0 {
+		pm.jvmOperatingSystemFreeSwapSpace.Set(freeSwapSpace)
+	}
+	if totalPhysicalMemory >= 0 {
+		pm.jvmOperatingSystemTotalPhysicalMemory.Set(totalPhysicalMemory)
+	}
+	if totalSwapSpace >= 0 {
+		pm.jvmOperatingSystemTotalSwapSpace.Set(totalSwapSpace)
+	}
+	if processCpuTime >= 0 {
+		pm.jvmOperatingSystemProcessCpuTime.Add(processCpuTime)
+	}
+	if maxFileDescriptors >= 0 {
+		pm.jvmOperatingSystemMaxFileDescriptors.Set(maxFileDescriptors)
+	}
+	if systemCpuLoad >= 0 {
+		pm.jvmOperatingSystemSystemCpuLoad.Set(systemCpuLoad)
+	}
+	if availableProcessors >= 0 {
+		pm.jvmOperatingSystemAvailableProcessors.Set(availableProcessors)
+	}
+	if cpuLoad >= 0 {
+		pm.jvmOperatingSystemCpuLoad.Set(cpuLoad)
+	}
+	if freeMemory >= 0 {
+		pm.jvmOperatingSystemFreeMemory.Set(freeMemory)
+	}
+}
+
+// UpdateJVMTimingMetrics 更新JVM计时指标
+func (pm *PuppetDBMetrics) UpdateJVMTimingMetrics(uptime float64, startTime float64) {
+	if uptime >= 0 {
+		pm.jvmRuntimeUptime.Add(uptime)
+	}
+	if startTime >= 0 {
+		pm.jvmRuntimeStartTime.Set(startTime)
+	}
+}
+
+// UpdateJVMThreadingMetrics 更新JVM线程指标
+func (pm *PuppetDBMetrics) UpdateJVMThreadingMetrics(totalStartedThreads float64, peakThreadCount float64, daemonThreadCount float64, currentThreadAllocatedBytes float64, threadAllocatedMemoryEnabled float64, threadCpuTimeEnabled float64) {
+	if totalStartedThreads >= 0 {
+		pm.jvmThreadingTotalStartedThreads.Add(totalStartedThreads)
+	}
+	if peakThreadCount >= 0 {
+		pm.jvmThreadingPeakThreadCount.Set(peakThreadCount)
+	}
+	if daemonThreadCount >= 0 {
+		pm.jvmThreadingDaemonThreadCount.Set(daemonThreadCount)
+	}
+	if currentThreadAllocatedBytes >= 0 {
+		pm.jvmThreadingCurrentThreadAllocatedBytes.Set(currentThreadAllocatedBytes)
+	}
+	if threadAllocatedMemoryEnabled >= 0 {
+		pm.jvmThreadingThreadAllocatedMemoryEnabled.Set(threadAllocatedMemoryEnabled)
+	}
+	if threadCpuTimeEnabled >= 0 {
+		pm.jvmThreadingThreadCpuTimeEnabled.Set(threadCpuTimeEnabled)
 	}
 }

@@ -226,6 +226,195 @@ func (mc *MetricsClient) GetJVMMetrics() (map[string]float64, error) {
 	return metrics, nil
 }
 
+// GetJVMDetailedMetrics 获取详细的JVM指标，包括内存池、垃圾收集器、运行时系统等
+func (mc *MetricsClient) GetJVMDetailedMetrics() (map[string]interface{}, error) {
+	metrics := make(map[string]interface{})
+
+	// 内存池指标
+	memoryPools := []string{
+		"java.lang:name=G1 Eden Space,type=MemoryPool",
+		"java.lang:name=G1 Old Gen,type=MemoryPool",
+		"java.lang:name=G1 Survivor Space,type=MemoryPool",
+		"java.lang:name=Metaspace,type=MemoryPool",
+	}
+
+	for _, pool := range memoryPools {
+		poolData, err := mc.getMBeanFullData(pool)
+		if err == nil && poolData != nil {
+			poolName := extractPoolName(pool)
+			metrics[fmt.Sprintf("memory_pool_%s", poolName)] = poolData
+		}
+	}
+
+	// 垃圾收集器指标
+	garbageCollectors := []string{
+		"java.lang:name=G1 Young Generation,type=GarbageCollector",
+		"java.lang:name=G1 Old Generation,type=GarbageCollector",
+	}
+
+	for _, gc := range garbageCollectors {
+		gcData, err := mc.getMBeanFullData(gc)
+		if err == nil && gcData != nil {
+			gcName := extractGCName(gc)
+			metrics[fmt.Sprintf("gc_%s", gcName)] = gcData
+		}
+	}
+
+	// 运行时系统指标
+	systemMBeans := []string{
+		"java.lang:type=ClassLoading",
+		"java.lang:type=Compilation",
+		"java.lang:type=OperatingSystem",
+		"java.lang:type=Runtime",
+		"java.lang:type=Threading",
+	}
+
+	for _, mbean := range systemMBeans {
+		mbeanData, err := mc.getMBeanFullData(mbean)
+		if err == nil && mbeanData != nil {
+			mbeanName := extractMBeanName(mbean)
+			metrics[mbeanName] = mbeanData
+		}
+	}
+
+	return metrics, nil
+}
+
+// GetJVMStandardMetrics 获取标准化的JVM指标，便于Prometheus导出
+func (mc *MetricsClient) GetJVMStandardMetrics() (map[string]float64, error) {
+	metrics := make(map[string]float64)
+
+	// 内存池使用量
+	memoryPoolMetrics := []struct {
+		mbean      string
+		metricName string
+	}{
+		{"java.lang:name=G1 Eden Space,type=MemoryPool", "memory_pool_g1_eden_used"},
+		{"java.lang:name=G1 Old Gen,type=MemoryPool", "memory_pool_g1_old_gen_used"},
+		{"java.lang:name=G1 Survivor Space,type=MemoryPool", "memory_pool_g1_survivor_used"},
+		{"java.lang:name=Metaspace,type=MemoryPool", "memory_pool_metaspace_used"},
+	}
+
+	for _, mp := range memoryPoolMetrics {
+		fullData, err := mc.getMBeanFullData(mp.mbean)
+		if err == nil && fullData != nil {
+			if usage, ok := fullData["Usage"].(map[string]interface{}); ok {
+				if used, ok := usage["used"].(float64); ok {
+					metrics[mp.metricName] = used
+				}
+			}
+		}
+	}
+
+	// 垃圾收集器统计
+	gcMetrics := []struct {
+		mbean      string
+		metricName string
+		field      string
+	}{
+		{"java.lang:name=G1 Young Generation,type=GarbageCollector", "gc_g1_young_collection_count", "CollectionCount"},
+		{"java.lang:name=G1 Young Generation,type=GarbageCollector", "gc_g1_young_collection_time", "CollectionTime"},
+		{"java.lang:name=G1 Old Generation,type=GarbageCollector", "gc_g1_old_collection_count", "CollectionCount"},
+		{"java.lang:name=G1 Old Generation,type=GarbageCollector", "gc_g1_old_collection_time", "CollectionTime"},
+	}
+
+	for _, gc := range gcMetrics {
+		value, err := mc.getMBeanValueFromField(gc.mbean, gc.field)
+		if err == nil {
+			metrics[gc.metricName] = value
+		}
+	}
+
+	// 类加载统计
+	classLoadingMetrics := []struct {
+		field      string
+		metricName string
+	}{
+		{"LoadedClassCount", "class_loading_loaded_count"},
+		{"UnloadedClassCount", "class_loading_unloaded_count"},
+		{"TotalLoadedClassCount", "class_loading_total_loaded_class_count"},
+	}
+
+	for _, cl := range classLoadingMetrics {
+		value, err := mc.getMBeanValueFromField("java.lang:type=ClassLoading", cl.field)
+		if err == nil {
+			metrics[cl.metricName] = value
+		}
+	}
+
+	// 编译统计
+	compilationTime, err := mc.getMBeanValueFromField("java.lang:type=Compilation", "TotalCompilationTime")
+	if err == nil {
+		metrics["compilation_total_time"] = compilationTime
+	}
+
+	// 操作系统指标
+	osMetrics := []struct {
+		field      string
+		metricName string
+	}{
+		{"OpenFileDescriptorCount", "os_open_file_descriptors"},
+		{"CommittedVirtualMemorySize", "os_committed_virtual_memory"},
+		{"FreePhysicalMemorySize", "os_free_physical_memory"},
+		{"SystemLoadAverage", "os_system_load_average"},
+		{"ProcessCpuLoad", "os_process_cpu_load"},
+		{"FreeSwapSpaceSize", "os_free_swap_space"},
+		{"TotalPhysicalMemorySize", "os_total_physical_memory"},
+		{"TotalSwapSpaceSize", "os_total_swap_space"},
+		{"ProcessCpuTime", "os_process_cpu_time"},
+		{"MaxFileDescriptorCount", "os_max_file_descriptors"},
+		{"SystemCpuLoad", "os_system_cpu_load"},
+		{"AvailableProcessors", "os_available_processors"},
+		{"CpuLoad", "os_cpu_load"},
+		{"FreeMemorySize", "os_free_memory"},
+	}
+
+	for _, os := range osMetrics {
+		value, err := mc.getMBeanValueFromField("java.lang:type=OperatingSystem", os.field)
+		if err == nil {
+			metrics[os.metricName] = value
+		}
+	}
+
+	// 运行时指标
+	runtimeMetrics := []struct {
+		field      string
+		metricName string
+	}{
+		{"Uptime", "runtime_uptime"},
+		{"StartTime", "runtime_start_time"},
+	}
+
+	for _, rt := range runtimeMetrics {
+		value, err := mc.getMBeanValueFromField("java.lang:type=Runtime", rt.field)
+		if err == nil {
+			metrics[rt.metricName] = value
+		}
+	}
+
+	// 线程指标
+	threadingMetrics := []struct {
+		field      string
+		metricName string
+	}{
+		{"TotalStartedThreadCount", "threading_total_started_threads"},
+		{"PeakThreadCount", "threading_peak_thread_count"},
+		{"DaemonThreadCount", "threading_daemon_thread_count"},
+		{"CurrentThreadAllocatedBytes", "threading_current_thread_allocated_bytes"},
+		{"ThreadAllocatedMemoryEnabled", "threading_allocated_memory_enabled"},
+		{"ThreadCpuTimeEnabled", "threading_cpu_time_enabled"},
+	}
+
+	for _, th := range threadingMetrics {
+		value, err := mc.getMBeanValueFromField("java.lang:type=Threading", th.field)
+		if err == nil {
+			metrics[th.metricName] = value
+		}
+	}
+
+	return metrics, nil
+}
+
 // GetHTTPMetrics 获取HTTP服务指标
 func (mc *MetricsClient) GetHTTPMetrics() (map[string]map[string]float64, error) {
 	metrics := make(map[string]map[string]float64)
@@ -518,4 +707,201 @@ func (mc *MetricsClient) GetAvailableMBeans() ([]string, error) {
 	}
 
 	return mbeans, nil
+}
+
+// extractPoolName 从MBean名称中提取内存池名称
+func extractPoolName(mbeanName string) string {
+	// 从类似 "java.lang:name=G1 Eden Space,type=MemoryPool" 中提取 "g1_eden"
+	if strings.Contains(mbeanName, "name=") {
+		start := strings.Index(mbeanName, "name=") + 5
+		end := strings.Index(mbeanName[start:], ",")
+		if end == -1 {
+			end = len(mbeanName) - start
+		}
+		poolName := mbeanName[start : start+end]
+		// 清理名称，替换空格为下划线，转换为小写
+		poolName = strings.ReplaceAll(poolName, " ", "_")
+		poolName = strings.ToLower(poolName)
+		return poolName
+	}
+	return "unknown"
+}
+
+// extractGCName 从MBean名称中提取垃圾收集器名称
+func extractGCName(mbeanName string) string {
+	// 从类似 "java.lang:name=G1 Young Generation,type=GarbageCollector" 中提取 "g1_young"
+	if strings.Contains(mbeanName, "name=") {
+		start := strings.Index(mbeanName, "name=") + 5
+		end := strings.Index(mbeanName[start:], ",")
+		if end == -1 {
+			end = len(mbeanName) - start
+		}
+		gcName := mbeanName[start : start+end]
+		// 清理名称，替换空格为下划线，转换为小写
+		gcName = strings.ReplaceAll(gcName, " ", "_")
+		gcName = strings.ToLower(gcName)
+		return gcName
+	}
+	return "unknown"
+}
+
+// extractMBeanName 从MBean名称中提取简化的MBean名称
+func extractMBeanName(mbeanName string) string {
+	// 从类似 "java.lang:type=ClassLoading" 中提取 "classloading"
+	if strings.Contains(mbeanName, "type=") {
+		start := strings.Index(mbeanName, "type=") + 5
+		end := len(mbeanName)
+		mbeanName = mbeanName[start:end]
+	}
+	// 转换为小写
+	mbeanName = strings.ToLower(mbeanName)
+	return mbeanName
+}
+
+// getMBeanValueFromField 从MBean的特定字段中获取值
+func (mc *MetricsClient) getMBeanValueFromField(mbeanName string, field string) (float64, error) {
+	fullData, err := mc.getMBeanFullData(mbeanName)
+	if err != nil {
+		return 0, err
+	}
+
+	if fullData == nil {
+		return 0, fmt.Errorf("no data found for MBean %s", mbeanName)
+	}
+
+	// 尝试直接获取字段值
+	if val, ok := fullData[field]; ok {
+		return mc.parseMBeanValue(val, mbeanName)
+	}
+
+	// 对于某些MBean，字段可能在value子对象中
+	if val, ok := fullData["value"]; ok {
+		if valueMap, ok := val.(map[string]interface{}); ok {
+			if fieldVal, ok := valueMap[field]; ok {
+				return mc.parseMBeanValue(fieldVal, mbeanName)
+			}
+		}
+	}
+
+	return 0, fmt.Errorf("field %s not found in MBean %s", field, mbeanName)
+}
+
+// GetJVMComprehensiveMetrics 获取综合的JVM指标，包含所有重要的JMX指标
+func (mc *MetricsClient) GetJVMComprehensiveMetrics() (map[string]float64, error) {
+	// 使用批量获取提高效率
+	mbeanNames := []string{
+		// 内存池指标
+		"java.lang:name=G1 Eden Space,type=MemoryPool",
+		"java.lang:name=G1 Old Gen,type=MemoryPool",
+		"java.lang:name=G1 Survivor Space,type=MemoryPool",
+		"java.lang:name=Metaspace,type=MemoryPool",
+
+		// 垃圾收集器指标
+		"java.lang:name=G1 Young Generation,type=GarbageCollector",
+		"java.lang:name=G1 Old Generation,type=GarbageCollector",
+
+		// 运行时系统指标
+		"java.lang:type=ClassLoading",
+		"java.lang:type=Compilation",
+		"java.lang:type=OperatingSystem",
+		"java.lang:type=Runtime",
+		"java.lang:type=Threading",
+	}
+
+	// 批量获取指标值
+	bulkMetrics, err := mc.GetMetricsBulk(mbeanNames)
+	if err != nil {
+		// 如果批量获取失败，回退到逐个获取
+		return mc.GetJVMStandardMetrics()
+	}
+
+	// 处理批量获取的结果
+	metrics := make(map[string]float64)
+
+	for mbeanName, value := range bulkMetrics {
+		metricName := mc.convertMBeanToMetricName(mbeanName)
+		if metricName != "" {
+			metrics[metricName] = value
+		}
+	}
+
+	return metrics, nil
+}
+
+// convertMBeanToMetricName 将MBean名称转换为Prometheus指标名称
+func (mc *MetricsClient) convertMBeanToMetricName(mbeanName string) string {
+	// 内存池指标
+	if strings.Contains(mbeanName, "MemoryPool") {
+		poolName := extractPoolName(mbeanName)
+		return fmt.Sprintf("jvm_memory_pool_%s_used_bytes", poolName)
+	}
+
+	// 垃圾收集器指标
+	if strings.Contains(mbeanName, "GarbageCollector") {
+		gcName := extractGCName(mbeanName)
+		if strings.Contains(mbeanName, "CollectionCount") {
+			return fmt.Sprintf("jvm_gc_%s_collection_count", gcName)
+		}
+		if strings.Contains(mbeanName, "CollectionTime") {
+			return fmt.Sprintf("jvm_gc_%s_collection_time_seconds", gcName)
+		}
+	}
+
+	// 类加载指标
+	if strings.Contains(mbeanName, "ClassLoading") {
+		if strings.Contains(mbeanName, "LoadedClassCount") {
+			return "jvm_class_loading_loaded_class_count"
+		}
+		if strings.Contains(mbeanName, "UnloadedClassCount") {
+			return "jvm_class_loading_unloaded_class_count"
+		}
+		if strings.Contains(mbeanName, "TotalLoadedClassCount") {
+			return "jvm_class_loading_total_loaded_class_count"
+		}
+	}
+
+	// 编译指标
+	if strings.Contains(mbeanName, "Compilation") && strings.Contains(mbeanName, "TotalCompilationTime") {
+		return "jvm_compilation_total_time_seconds"
+	}
+
+	// 操作系统指标
+	if strings.Contains(mbeanName, "OperatingSystem") {
+		if strings.Contains(mbeanName, "OpenFileDescriptorCount") {
+			return "jvm_operating_system_open_file_descriptors"
+		}
+		if strings.Contains(mbeanName, "CommittedVirtualMemorySize") {
+			return "jvm_operating_system_committed_virtual_memory_bytes"
+		}
+		if strings.Contains(mbeanName, "FreePhysicalMemorySize") {
+			return "jvm_operating_system_free_physical_memory_bytes"
+		}
+		// 其他操作系统指标...
+	}
+
+	// 运行时指标
+	if strings.Contains(mbeanName, "Runtime") {
+		if strings.Contains(mbeanName, "Uptime") {
+			return "jvm_runtime_uptime_seconds"
+		}
+		if strings.Contains(mbeanName, "StartTime") {
+			return "jvm_runtime_start_time_seconds"
+		}
+	}
+
+	// 线程指标
+	if strings.Contains(mbeanName, "Threading") {
+		if strings.Contains(mbeanName, "TotalStartedThreadCount") {
+			return "jvm_threading_total_started_threads"
+		}
+		if strings.Contains(mbeanName, "PeakThreadCount") {
+			return "jvm_threading_peak_thread_count"
+		}
+		if strings.Contains(mbeanName, "DaemonThreadCount") {
+			return "jvm_threading_daemon_thread_count"
+		}
+		// 其他线程指标...
+	}
+
+	return ""
 }
