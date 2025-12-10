@@ -11,8 +11,16 @@ Prometheus PuppetDB Exporter 是一个用于监控 PuppetDB 的 Prometheus 导�
 - **时间间隔指标**: 节点报告、编录、事实数据的时间间隔
 - **PuppetDB核心性能**: 命令处理、存储层、人口统计指标
 - **HTTP服务指标**: 请求统计、延迟、连接数
-- **数据库连接池**: 连接状态、等待时间
+- **数据库连接池**: 连接状态、等待时间、使用统计、创建统计、超时率
 - **JVM指标**: 内存使用、线程、GC统计
+
+### 🆕 数据库连接池增强功能
+- **完整的连接池统计**: 支持 PDBReadPool 和 PDBWritePool 的完整指标采集
+- **连接创建统计**: 包含创建时间的均值、百分位数统计
+- **连接超时率监控**: 支持1分钟、5分钟、15分钟速率和平均速率
+- **连接池配置指标**: 最大连接数、最小连接数配置监控
+- **详细的使用统计**: 包含50th、75th、95th、99th、999th百分位数
+- **等待时间统计**: 详细的连接等待时间分布统计
 
 ### ❌ 移除不合适指标
 - 移除了含义不明确或重复的标签
@@ -149,7 +157,46 @@ http://<host>:9635/metrics
 | `puppetdb_db_connections_active` | gauge | 活跃数据库连接数（按连接池分类） | 核心 |
 | `puppetdb_db_connections_idle` | gauge | 空闲数据库连接数（按连接池分类） | 诊断 |
 | `puppetdb_db_connections_total` | gauge | 数据库连接总数（按连接池分类） | 诊断 |
+| `puppetdb_db_connections_pending` | gauge | 待处理数据库连接数（按连接池分类） | 诊断 |
 | `puppetdb_db_connection_wait_time_seconds` | histogram | 数据库连接等待时间（按连接池分类） | 业务 |
+| `puppetdb_db_pool_max_connections` | gauge | 数据库连接池最大连接数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_min_connections` | gauge | 数据库连接池最小连接数（按连接池分类） | 诊断 |
+
+#### 数据库连接池使用统计
+| 指标 | 类型 | 说明 | 监控级别 |
+|------|------|------|----------|
+| `puppetdb_db_pool_usage_mean` | gauge | 数据库连接池使用均值（按连接池分类） | 核心 |
+| `puppetdb_db_pool_usage_75th_percentile` | gauge | 数据库连接池使用75th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_usage_95th_percentile` | gauge | 数据库连接池使用95th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_usage_99th_percentile` | gauge | 数据库连接池使用99th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_usage_max` | gauge | 数据库连接池使用最大值（按连接池分类） | 诊断 |
+
+#### 数据库连接池等待时间统计
+| 指标 | 类型 | 说明 | 监控级别 |
+|------|------|------|----------|
+| `puppetdb_db_pool_wait_mean_seconds` | gauge | 数据库连接池等待时间均值（按连接池分类） | 核心 |
+| `puppetdb_db_pool_wait_75th_percentile_seconds` | gauge | 数据库连接池等待时间75th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_wait_95th_percentile_seconds` | gauge | 数据库连接池等待时间95th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_wait_99th_percentile_seconds` | gauge | 数据库连接池等待时间99th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_wait_max_seconds` | gauge | 数据库连接池等待时间最大值（按连接池分类） | 诊断 |
+
+#### 数据库连接池连接创建统计
+| 指标 | 类型 | 说明 | 监控级别 |
+|------|------|------|----------|
+| `puppetdb_db_pool_connection_creation_mean_seconds` | gauge | 数据库连接创建时间均值（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_creation_75th_percentile_seconds` | gauge | 数据库连接创建时间75th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_creation_95th_percentile_seconds` | gauge | 数据库连接创建时间95th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_creation_99th_percentile_seconds` | gauge | 数据库连接创建时间99th百分位数（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_creation_max_seconds` | gauge | 数据库连接创建时间最大值（按连接池分类） | 诊断 |
+
+#### 数据库连接池超时率指标
+| 指标 | 类型 | 说明 | 监控级别 |
+|------|------|------|----------|
+| `puppetdb_db_pool_connection_timeout_rate` | gauge | 数据库连接超时率（按连接池分类） | 核心 |
+| `puppetdb_db_pool_connection_timeout_one_minute_rate` | gauge | 数据库连接超时率1分钟速率（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_timeout_five_minute_rate` | gauge | 数据库连接超时率5分钟速率（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_timeout_fifteen_minute_rate` | gauge | 数据库连接超时率15分钟速率（按连接池分类） | 诊断 |
+| `puppetdb_db_pool_connection_timeout_mean_rate` | gauge | 数据库连接超时率平均速率（按连接池分类） | 诊断 |
 
 #### JVM指标
 | 指标 | 类型 | 说明 | 监控级别 |
@@ -175,6 +222,8 @@ http://<host>:9635/metrics
 - 节点报告时间间隔 `puppetdb_node_report_age_seconds > 7200`
 - HTTP请求延迟 `histogram_quantile(0.95, puppetdb_http_request_duration_seconds_bucket) > 5`
 - JVM内存使用率 `puppetdb_jvm_memory_used_bytes / puppetdb_jvm_memory_max_bytes > 0.9`
+- 数据库连接超时率 `puppetdb_db_pool_connection_timeout_rate > 0.1`
+- 数据库连接池使用率 `puppetdb_db_pool_usage_mean > 0.9`
 
 **业务指标**（推荐监控）：
 - 节点失败率异常上升
@@ -185,6 +234,25 @@ http://<host>:9635/metrics
 - 详细性能数据分析
 - 容量规划参考
 - 故障排查辅助
+
+### 数据库连接池监控最佳实践
+
+**关键监控指标**:
+- **连接池使用率**: `puppetdb_db_pool_usage_mean` 应保持在 0.7-0.8 以下
+- **连接等待时间**: `puppetdb_db_pool_wait_95th_percentile_seconds` 应小于 500ms
+- **连接超时率**: `puppetdb_db_pool_connection_timeout_rate` 应接近于 0
+- **活跃连接数**: `puppetdb_db_connections_active` 对比 `puppetdb_db_pool_max_connections` 检查是否接近上限
+
+**性能调优建议**:
+- 当连接池使用率持续高于 80% 时，考虑增加最大连接数
+- 当连接等待时间超过 1 秒时，检查数据库性能或增加连接池大小
+- 监控连接创建时间，如果创建时间过长可能需要优化数据库连接参数
+- 定期检查连接超时率，高超时率可能表示网络或数据库问题
+
+**容量规划**:
+- 使用 `puppetdb_db_pool_usage_*` 指标分析连接池使用趋势
+- 结合 `puppetdb_db_pool_connection_creation_*` 指标评估连接创建开销
+- 监控 `puppetdb_db_connections_pending` 了解连接请求排队情况
 
 ## 变更说明
 
@@ -253,6 +321,33 @@ groups:
     annotations:
       summary: "PuppetDB JVM memory usage is high"
       description: "JVM memory usage is {{ $value | humanizePercentage }} (above 90%)"
+      
+  - alert: PuppetDBConnectionPoolTimeoutHigh
+    expr: puppetdb_db_pool_connection_timeout_rate > 0.1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "PuppetDB connection pool timeout rate is high"
+      description: "Connection pool {{ $labels.pool }} timeout rate is {{ $value }} (above 0.1)"
+      
+  - alert: PuppetDBConnectionPoolUsageHigh
+    expr: puppetdb_db_pool_usage_mean > 0.9
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "PuppetDB connection pool usage is high"
+      description: "Connection pool {{ $labels.pool }} usage is {{ $value | humanizePercentage }} (above 90%)"
+      
+  - alert: PuppetDBConnectionPoolWaitTimeHigh
+    expr: puppetdb_db_pool_wait_95th_percentile_seconds > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "PuppetDB connection pool wait time is high"
+      description: "Connection pool {{ $labels.pool }} 95th percentile wait time is {{ $value }}s (above 1s)"
 ```
 
 ## 📊 Grafana Dashboard
@@ -295,9 +390,10 @@ groups:
 
 ## 🚀 后续改进计划
 
-1. **支持Metrics V2 API**
+1. **支持Metrics V2 API** ✅ 已完成
    - 优先使用新的`/metrics/v2`端点
    - 提供更好的安全性和性能
+   - 完整支持数据库连接池指标采集
 
 2. **增加自定义指标**
    - 支持用户自定义MBean指标
@@ -320,6 +416,12 @@ groups:
 - [x] 添加了批量获取支持
 - [x] 改进了错误处理
 - [x] 更新了文档说明
+- [x] 完整实现数据库连接池指标采集
+- [x] 支持PDBReadPool和PDBWritePool完整指标
+- [x] 添加连接创建统计和超时率监控
+- [x] 支持详细的百分位数统计（50th, 75th, 95th, 99th, 999th）
+- [x] 添加数据库连接池配置指标监控
+- [x] 更新告警规则和监控建议
 
 ## 🔍 故障排除
 
